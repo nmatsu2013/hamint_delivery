@@ -32,9 +32,3 @@ export class UnauthorizedError extends DomainError {
     super(message, 'UNAUTHORIZED');
   }
 }
-
-export class ForbiddenError extends DomainError {
-  constructor(message = 'Forbidden') {
-    super(message, 'FORBIDDEN');
-  }
-}

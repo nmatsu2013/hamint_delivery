@@ -3,21 +3,21 @@ import type {
   SalesOrderLineEntity,
   SalesOrderSummaryEntity,
   PaymentStatusLabel,
-} from '../domain/entities/sales-order.entity';
+} from '../domain/entities/sales-order.entity.js';
 import type {
   SalesOrderListParams,
   ISalesOrderRepository,
-} from '../domain/repositories/sales-order.repository.interface';
+} from '../domain/repositories/sales-order.repository.interface.js';
 import {
   normalizeSalesOrderLineStatus,
   normalizeSalesOrderStatus,
-} from '../domain/entities/status-mapper';
-import type { SalesOrderStatus } from '../domain/entities/status';
+} from '../domain/entities/status-mapper.js';
+import type { SalesOrderStatus } from '../domain/entities/status.js';
 import {
   toNumber,
   toStringValue,
   type Queryable,
-} from './database';
+} from './database.js';
 
 const PAYMENT_LATERAL = `
   left join lateral (
@@ -163,9 +163,61 @@ export class PgSalesOrderRepository implements ISalesOrderRepository {
   ): Promise<{ items: SalesOrderSummaryEntity[]; total: number }> {
     const values: unknown[] = [];
     const conditions: string[] = ['so.is_active'];
+    if (params.customer) {
+      values.push(`%${params.customer}%`);
+      conditions.push(`c.clinic_name ilike $${values.length}`);
+    }
     if (params.status) {
       values.push(params.status);
       conditions.push(`so.status = $${values.length}`);
+    }
+    if (params.orderDateFrom) {
+      values.push(params.orderDateFrom);
+      conditions.push(`so.order_date >= $${values.length}`);
+    }
+    if (params.orderDateTo) {
+      values.push(params.orderDateTo);
+      conditions.push(`so.order_date <= $${values.length}`);
+    }
+    if (params.purchaseOrderDate) {
+      values.push(params.purchaseOrderDate);
+      conditions.push(`exists (
+        select 1
+        from sales_order_lines sol_filter
+        join purchase_order_lines pol_filter
+          on pol_filter.sales_order_line_id = sol_filter.id and pol_filter.is_active
+        join purchase_orders po_filter
+          on po_filter.id = pol_filter.purchase_order_id and po_filter.is_active
+        where sol_filter.sales_order_id = so.id
+          and sol_filter.is_active
+          and po_filter.ordered_date = $${values.length}
+      )`);
+    }
+    if (params.arrivalDate) {
+      values.push(params.arrivalDate);
+      conditions.push(`exists (
+        select 1
+        from sales_order_lines sol_filter
+        join purchase_order_lines pol_filter
+          on pol_filter.sales_order_line_id = sol_filter.id and pol_filter.is_active
+        join shipments sh_filter
+          on sh_filter.purchase_order_id = pol_filter.purchase_order_id and sh_filter.is_active
+        where sol_filter.sales_order_id = so.id
+          and sol_filter.is_active
+          and (sh_filter.delivered_date = $${values.length} or sh_filter.eta = $${values.length})
+      )`);
+    }
+    if (params.receivedDate) {
+      values.push(params.receivedDate);
+      conditions.push(`exists (
+        select 1
+        from sales_order_lines sol_filter
+        join purchase_order_lines pol_filter
+          on pol_filter.sales_order_line_id = sol_filter.id and pol_filter.is_active
+        where sol_filter.sales_order_id = so.id
+          and sol_filter.is_active
+          and pol_filter.received_date = $${values.length}
+      )`);
     }
     if (params.search) {
       values.push(`%${params.search}%`);
@@ -357,6 +409,28 @@ export class PgSalesOrderRepository implements ISalesOrderRepository {
     const result = await this.db.query<{ count: string }>(
       `select count(*) as count from sales_orders where status = $1 and is_active`,
       [status],
+    );
+    return toNumber(result.rows[0]?.count);
+  }
+
+  async countByStatuses(): Promise<Record<string, number>> {
+    const result = await this.db.query<{ status: string; count: string }>(
+      `select status, count(*) as count from sales_orders where is_active group by status`,
+    );
+    const counts: Record<string, number> = {};
+    for (const row of result.rows) {
+      counts[row.status] = toNumber(row.count);
+    }
+    return counts;
+  }
+
+  async countByOrderMonth(month: string): Promise<number> {
+    const result = await this.db.query<{ count: string }>(
+      `select count(*) as count from sales_orders
+       where is_active
+         and order_date >= $1::date
+         and order_date < ($1::date + interval '1 month')`,
+      [`${month}-01`],
     );
     return toNumber(result.rows[0]?.count);
   }

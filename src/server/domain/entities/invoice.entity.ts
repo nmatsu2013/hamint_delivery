@@ -1,4 +1,4 @@
-import type { InvoiceStatus } from './status';
+import type { InvoiceStatus } from './status.js';
 
 export interface InvoiceLineEntity {
   id: string;

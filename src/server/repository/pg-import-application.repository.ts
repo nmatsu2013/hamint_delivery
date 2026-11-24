@@ -2,13 +2,13 @@ import type {
   ImportApplicationEntity,
   ImportDocumentEntity,
   UpdateImportApplicationStatusInput,
-} from '../domain/entities/import-application.entity';
-import { normalizeImportApplicationStatus } from '../domain/entities/status-mapper';
+} from '../domain/entities/import-application.entity.js';
+import { normalizeImportApplicationStatus } from '../domain/entities/status-mapper.js';
 import type {
   IImportApplicationRepository,
   ImportApplicationListParams,
-} from '../domain/repositories/import-application.repository.interface';
-import { toNullableNumber, toNumber, type Queryable } from './database';
+} from '../domain/repositories/import-application.repository.interface.js';
+import { toNullableNumber, toNumber, type Queryable } from './database.js';
 
 interface ApplicationRow {
   id: string;

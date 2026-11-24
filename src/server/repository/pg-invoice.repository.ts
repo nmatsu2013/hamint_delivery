@@ -1,17 +1,17 @@
-import { BusinessRuleViolationError } from '../domain/errors/domain.error';
+import { BusinessRuleViolationError } from '../domain/errors/domain.error.js';
 import type {
   InvoiceEntity,
   InvoiceLineEntity,
   InvoiceSummaryEntity,
   PaymentEntity,
-} from '../domain/entities/invoice.entity';
-import { normalizeInvoiceStatus } from '../domain/entities/status-mapper';
-import type { InvoiceStatus } from '../domain/entities/status';
+} from '../domain/entities/invoice.entity.js';
+import { normalizeInvoiceStatus } from '../domain/entities/status-mapper.js';
+import type { InvoiceStatus } from '../domain/entities/status.js';
 import type {
   IInvoiceRepository,
   InvoiceListParams,
-} from '../domain/repositories/invoice.repository.interface';
-import { toNumber, type Queryable } from './database';
+} from '../domain/repositories/invoice.repository.interface.js';
+import { toNumber, type Queryable } from './database.js';
 
 interface InvoiceRow {
   id: string;

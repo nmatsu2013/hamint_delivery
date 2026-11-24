@@ -2,21 +2,21 @@ import type {
   ShipmentEntity,
   ShipmentLineEntity,
   ShipmentSummaryEntity,
-} from '../domain/entities/shipment.entity';
+} from '../domain/entities/shipment.entity.js';
 import {
   normalizeShipmentDirection,
   normalizeShipmentStatus,
-} from '../domain/entities/status-mapper';
+} from '../domain/entities/status-mapper.js';
 import {
   SHIPMENT_DIRECTION_LABEL,
   type ShipmentDirection,
   type ShipmentStatus,
-} from '../domain/entities/status';
+} from '../domain/entities/status.js';
 import type {
   IShipmentRepository,
   ShipmentListParams,
-} from '../domain/repositories/shipment.repository.interface';
-import { toNumber, type Queryable } from './database';
+} from '../domain/repositories/shipment.repository.interface.js';
+import { toNumber, type Queryable } from './database.js';
 
 interface ShipmentRow {
   id: string;

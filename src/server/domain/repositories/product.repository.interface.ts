@@ -1,4 +1,4 @@
-import type { ProductEntity } from '../entities/product.entity';
+import type { ProductEntity } from '../entities/product.entity.js';
 
 export interface IProductRepository {
   listActive(): Promise<ProductEntity[]>;

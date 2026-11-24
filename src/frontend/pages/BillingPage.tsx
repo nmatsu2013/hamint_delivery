@@ -11,14 +11,11 @@ import {
   recordPayment,
 } from '../features/billing/api/billingApi';
 import { getSalesOrders } from '../features/salesOrders/api/salesOrdersApi';
-import { useAuthStore } from '../store/authStore';
 import { formatCurrency, formatDate, formatNumber, todayInputValue } from '../lib/format';
 
 export function BillingPage() {
-  const role = useAuthStore((state) => state.actor?.role);
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
-  const canEdit = role === 'accounting' || role === 'admin';
 
   const [orderId, setOrderId] = useState(searchParams.get('orderId') ?? '');
   const [invoiceDate, setInvoiceDate] = useState(todayInputValue());
@@ -34,18 +31,16 @@ export function BillingPage() {
   const invoicesQuery = useQuery({
     queryKey: ['invoices'],
     queryFn: () => getInvoices(),
-    enabled: canEdit,
   });
   const invoices = invoicesQuery.data?.items ?? [];
   const shippedOrdersQuery = useQuery({
     queryKey: ['sales-orders', '出荷済'],
     queryFn: () => getSalesOrders({ status: '出荷済', limit: 200 }),
-    enabled: canEdit,
   });
   const invoiceDetailQuery = useQuery({
     queryKey: ['invoice', selectedInvoiceId],
     queryFn: () => getInvoice(selectedInvoiceId),
-    enabled: canEdit && Boolean(selectedInvoiceId),
+    enabled: Boolean(selectedInvoiceId),
   });
 
   useEffect(() => {
@@ -133,12 +128,7 @@ export function BillingPage() {
 
       {message ? <SuccessAlert message={message} /> : null}
       {error ? <ErrorAlert error={error} /> : null}
-      {!canEdit ? (
-        <div className="alert alert-info">請求・入金の操作は経理または管理者のみ実行できます。</div>
-      ) : null}
-
-      {canEdit ? (
-        <section className="card card-pad">
+      <section className="card card-pad">
           <h2 className="section-title">請求を作成</h2>
           <div className="form-grid">
             <div className="field span-2">
@@ -189,11 +179,9 @@ export function BillingPage() {
               {createMutation.isPending ? '作成中…' : '請求を作成'}
             </button>
           </div>
-        </section>
-      ) : null}
+      </section>
 
-      {canEdit ? (
-        <section className="card">
+      <section className="card">
           <div className="card-header">
             <div>
               <h2 className="card-title">請求一覧</h2>
@@ -266,10 +254,9 @@ export function BillingPage() {
               </div>
             )
           ) : null}
-        </section>
-      ) : null}
+      </section>
 
-      {canEdit && selectedInvoiceId ? (
+      {selectedInvoiceId ? (
         <section className="card card-pad">
           <div className="inline" style={{ justifyContent: 'space-between' }}>
             <h2 className="section-title" style={{ marginBottom: 0 }}>
@@ -391,7 +378,7 @@ export function BillingPage() {
 
               {invoiceDetailQuery.data.status !== '入金済' ? (
                 <>
-                  <h3 className="section-title" style={{ marginTop: 24, fontSize: 18 }}>
+                  <h3 className="section-title" style={{ marginTop: 16 }}>
                     入金を登録
                   </h3>
                   <div className="form-grid three">

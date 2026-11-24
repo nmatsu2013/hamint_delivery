@@ -1,13 +1,12 @@
 import type { Context } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
-import { DomainError } from '../../domain/errors/domain.error';
+import { DomainError } from '../../domain/errors/domain.error.js';
 
 const STATUS_BY_CODE: Record<string, ContentfulStatusCode> = {
   NOT_FOUND: 404,
   VALIDATION_ERROR: 400,
   BUSINESS_RULE_VIOLATION: 422,
   UNAUTHORIZED: 401,
-  FORBIDDEN: 403,
 };
 
 export function handleError(error: Error, c: Context): Response {

@@ -1,6 +1,6 @@
-import { NotFoundError, ValidationError } from '../domain/errors/domain.error';
-import { deriveSalesOrderStatus } from '../domain/entities/status-mapper';
-import type { RepositoryContext } from '../domain/repositories/unit-of-work.interface';
+import { NotFoundError, ValidationError } from '../domain/errors/domain.error.js';
+import { deriveSalesOrderStatus } from '../domain/entities/status-mapper.js';
+import type { RepositoryContext } from '../domain/repositories/unit-of-work.interface.js';
 
 export function ensureFound<T>(value: T | null | undefined, entity: string, id: string): T {
   if (value === null || value === undefined) {

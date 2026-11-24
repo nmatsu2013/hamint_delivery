@@ -19,19 +19,19 @@ import { MasterPage } from './pages/MasterPage';
 
 export default function App() {
   const token = useAuthStore((state) => state.token);
-  const actor = useAuthStore((state) => state.actor);
   const setActor = useAuthStore((state) => state.setActor);
   const logout = useAuthStore((state) => state.logout);
 
   useEffect(() => {
-    if (!token || actor) {
+    if (!token) {
       return;
     }
+    // 起動時にプロフィールを再取得し、トークンの有効性を確認する。
     api
       .get<Actor>('/me')
       .then((me) => setActor(me))
       .catch(() => logout());
-  }, [token, actor, setActor, logout]);
+  }, [token, setActor, logout]);
 
   return (
     <Routes>

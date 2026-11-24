@@ -1,12 +1,12 @@
 import type {
   CustomerAddressEntity,
   CustomerEntity,
-} from '../domain/entities/customer.entity';
-import type { ProductEntity } from '../domain/entities/product.entity';
-import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface';
-import { todayInTokyo } from '../config/date';
-import { ensureFound } from './service-support';
-import { PriceService } from './price.service';
+} from '../domain/entities/customer.entity.js';
+import type { ProductEntity } from '../domain/entities/product.entity.js';
+import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface.js';
+import { todayInTokyo } from '../config/date.js';
+import { ensureFound } from './service-support.js';
+import { PriceService } from './price.service.js';
 
 export class MasterDataService {
   private readonly priceService: PriceService;

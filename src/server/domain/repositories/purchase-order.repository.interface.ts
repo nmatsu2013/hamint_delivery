@@ -2,7 +2,7 @@ import type {
   PurchaseOrderEntity,
   PurchaseOrderLineEntity,
   PurchaseOrderSummaryEntity,
-} from '../entities/purchase-order.entity';
+} from '../entities/purchase-order.entity.js';
 
 export interface PurchaseOrderListParams {
   status?: string;

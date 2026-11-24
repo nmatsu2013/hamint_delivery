@@ -1,20 +1,20 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import type { Env } from '../config/env';
-import type { Services } from '../service/services';
-import type { AppEnv } from './app-env';
-import { createAuthMiddleware } from './middleware/auth.middleware';
-import { handleError } from './middleware/error-handler';
-import { createAuthRoutes, createDevLoginRoute } from './auth.handler';
-import { createSalesOrderRoutes } from './sales-order.handler';
-import { createPurchaseOrderRoutes } from './purchase-order.handler';
-import { createShipmentRoutes } from './shipment.handler';
-import { createLotRoutes } from './lot.handler';
-import { createInvoiceRoutes } from './invoice.handler';
-import { createImportApplicationRoutes } from './import-application.handler';
-import { createDashboardRoutes } from './dashboard.handler';
-import { createMasterDataRoutes } from './master-data.handler';
-import { createAuditLogRoutes } from './audit-log.handler';
+import type { Env } from '../config/env.js';
+import type { Services } from '../service/services.js';
+import type { AppEnv } from './app-env.js';
+import { createAuthMiddleware } from './middleware/auth.middleware.js';
+import { handleError } from './middleware/error-handler.js';
+import { createAuthRoutes, createLoginRoute } from './auth.handler.js';
+import { createSalesOrderRoutes } from './sales-order.handler.js';
+import { createPurchaseOrderRoutes } from './purchase-order.handler.js';
+import { createShipmentRoutes } from './shipment.handler.js';
+import { createLotRoutes } from './lot.handler.js';
+import { createInvoiceRoutes } from './invoice.handler.js';
+import { createImportApplicationRoutes } from './import-application.handler.js';
+import { createDashboardRoutes } from './dashboard.handler.js';
+import { createMasterDataRoutes } from './master-data.handler.js';
+import { createAuditLogRoutes } from './audit-log.handler.js';
 
 export function createApp(services: Services, env: Env): Hono<AppEnv> {
   const app = new Hono<AppEnv>();
@@ -23,8 +23,6 @@ export function createApp(services: Services, env: Env): Hono<AppEnv> {
   app.get('/api/health', (c) =>
     c.json({ status: 'ok', environment: env.NODE_ENV, timestamp: new Date().toISOString() }),
   );
-  app.route('/api/auth', createDevLoginRoute(env));
-
   const origins =
     env.CORS_ORIGIN === '*'
       ? '*'
@@ -38,6 +36,7 @@ export function createApp(services: Services, env: Env): Hono<AppEnv> {
       maxAge: 600,
     }),
   );
+  app.route('/api/auth', createLoginRoute(env));
   app.use('/api/*', createAuthMiddleware(env));
 
   // 仕様: GET /api/me

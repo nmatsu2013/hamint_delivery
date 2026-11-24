@@ -1,11 +1,15 @@
-import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface';
-import { todayInTokyo } from '../config/date';
+import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface.js';
+import { todayInTokyo } from '../config/date.js';
 
 export interface DashboardKpis {
   todayOrdersCount: number;
   pendingOrdersCount: number;
   inTransitOrdersCount: number;
   unpaidInvoicesCount: number;
+  currentMonthOrdersCount: number;
+  totalOrdersCount: number;
+  statusCounts: Record<string, number>;
+  businessDate: string;
 }
 
 export class DashboardService {
@@ -13,18 +17,24 @@ export class DashboardService {
 
   async getKpis(now = new Date()): Promise<DashboardKpis> {
     const salesOrders = this.uow.repos.salesOrders;
-    const [todayOrdersCount, pendingOrdersCount, inTransitOrdersCount, unpaidInvoicesCount] =
+    const today = todayInTokyo(now);
+    const month = today.slice(0, 7);
+    const [todayOrdersCount, statusCounts, currentMonthOrdersCount, unpaidInvoicesCount] =
       await Promise.all([
-        salesOrders.countByOrderDate(todayInTokyo(now)),
-        salesOrders.countByStatus('受付'),
-        salesOrders.countByStatus('輸入・輸送中'),
+        salesOrders.countByOrderDate(today),
+        salesOrders.countByStatuses(),
+        salesOrders.countByOrderMonth(month),
         this.uow.repos.invoices.countUnpaid(),
       ]);
     return {
       todayOrdersCount,
-      pendingOrdersCount,
-      inTransitOrdersCount,
+      pendingOrdersCount: statusCounts['受付'] ?? 0,
+      inTransitOrdersCount: statusCounts['輸入・輸送中'] ?? 0,
       unpaidInvoicesCount,
+      currentMonthOrdersCount,
+      totalOrdersCount: Object.values(statusCounts).reduce((total, count) => total + count, 0),
+      statusCounts,
+      businessDate: today,
     };
   }
 }

@@ -10,9 +10,25 @@ async function main(): Promise<void> {
     throw new Error('DATABASE_URL が設定されていません');
   }
   const force = process.argv.includes('--force');
+  const reset = process.argv.includes('--reset');
   const client = new Client(createPgConfig(connectionString));
   await client.connect();
   try {
+    if (reset) {
+      console.log('既存のサンプルデータを削除します（--reset）');
+      await client.query(
+        `truncate table
+           audit_logs, payments, invoice_lines, invoices,
+           lot_movements, shipment_lines, shipments, lots,
+           import_documents, import_applications,
+           purchase_order_lines, purchase_orders,
+           sales_order_lines, sales_orders,
+           customer_prices, supplier_prices, import_fees,
+           customer_addresses, customers, products,
+           supplier_contacts, suppliers
+         restart identity cascade`,
+      );
+    }
     const countResult = await client.query<{ count: string }>(
       'select count(*) as count from products',
     );

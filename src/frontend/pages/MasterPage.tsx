@@ -3,20 +3,14 @@ import { useQuery } from '@tanstack/react-query';
 import { PageHeader } from '../components/elements/PageHeader';
 import { ErrorAlert, LoadingState } from '../components/elements/StateViews';
 import { getCustomers, getProducts } from '../features/master/api/masterApi';
-import { useAuthStore } from '../store/authStore';
 import { formatNumber } from '../lib/format';
 
 export function MasterPage() {
-  const role = useAuthStore((state) => state.actor?.role);
-  const canViewCustomers = role === 'sales' || role === 'admin';
-  const [tab, setTab] = useState<'products' | 'customers'>(
-    canViewCustomers ? 'customers' : 'products',
-  );
+  const [tab, setTab] = useState<'products' | 'customers'>('customers');
 
   const customersQuery = useQuery({
     queryKey: ['customers'],
     queryFn: getCustomers,
-    enabled: canViewCustomers,
   });
   const productsQuery = useQuery({ queryKey: ['products'], queryFn: getProducts });
 
@@ -30,15 +24,13 @@ export function MasterPage() {
       />
 
       <div className="tabs">
-        {canViewCustomers ? (
-          <button
-            type="button"
-            className={tab === 'customers' ? 'tab active' : 'tab'}
-            onClick={() => setTab('customers')}
-          >
-            顧客
-          </button>
-        ) : null}
+        <button
+          type="button"
+          className={tab === 'customers' ? 'tab active' : 'tab'}
+          onClick={() => setTab('customers')}
+        >
+          顧客
+        </button>
         <button
           type="button"
           className={tab === 'products' ? 'tab active' : 'tab'}

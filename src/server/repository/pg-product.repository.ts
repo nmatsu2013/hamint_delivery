@@ -1,6 +1,6 @@
-import type { ProductEntity } from '../domain/entities/product.entity';
-import type { IProductRepository } from '../domain/repositories/product.repository.interface';
-import { toNullableNumber, type Queryable } from './database';
+import type { ProductEntity } from '../domain/entities/product.entity.js';
+import type { IProductRepository } from '../domain/repositories/product.repository.interface.js';
+import { toNullableNumber, type Queryable } from './database.js';
 
 interface ProductRow {
   id: string;

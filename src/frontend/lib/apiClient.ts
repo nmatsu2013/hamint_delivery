@@ -1,5 +1,5 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api';
-const TOKEN_KEY = 'hamint_token';
+const TOKEN_KEY = 'hamint_token_v2';
 
 export class ApiError extends Error {
   constructor(

@@ -1,10 +1,6 @@
-export type Role = 'sales' | 'purchasing' | 'warehouse' | 'accounting' | 'admin';
-
 export interface Actor {
   id?: string;
-  email: string;
-  role: Role;
-  roleLabel: string;
+  userId: string;
   name?: string;
 }
 
@@ -20,6 +16,10 @@ export interface DashboardKpis {
   pendingOrdersCount: number;
   inTransitOrdersCount: number;
   unpaidInvoicesCount: number;
+  currentMonthOrdersCount: number;
+  totalOrdersCount: number;
+  statusCounts: Record<string, number>;
+  businessDate: string;
 }
 
 export interface SalesOrderLine {

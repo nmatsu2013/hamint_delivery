@@ -5,7 +5,6 @@ import { PageHeader } from '../components/elements/PageHeader';
 import { ErrorAlert, LoadingState } from '../components/elements/StateViews';
 import { getCustomers, getCustomerAddresses, getProducts, resolvePrice } from '../features/master/api/masterApi';
 import { createSalesOrder } from '../features/salesOrders/api/salesOrdersApi';
-import { useAuthStore } from '../store/authStore';
 import { formatCurrency, todayInputValue } from '../lib/format';
 
 interface EditableLine {
@@ -28,7 +27,6 @@ function newLine(): EditableLine {
 
 export function CreateSalesOrderPage() {
   const navigate = useNavigate();
-  const role = useAuthStore((state) => state.actor?.role);
   const [customerId, setCustomerId] = useState('');
   const [shipToId, setShipToId] = useState('');
   const [requestedDate, setRequestedDate] = useState(todayInputValue());
@@ -108,17 +106,6 @@ export function CreateSalesOrderPage() {
       lines: payloadLines.map((line) => ({ productId: line.productId, quantity: line.quantity })),
     });
   };
-
-  if (role && role !== 'sales' && role !== 'admin') {
-    return (
-      <main className="page">
-        <ErrorAlert error={new Error('受注登録は営業または管理者のみ実行できます')} />
-        <Link to="/orders" className="btn btn-secondary">
-          受注一覧へ戻る
-        </Link>
-      </main>
-    );
-  }
 
   return (
     <main className="page">
@@ -288,7 +275,7 @@ export function CreateSalesOrderPage() {
         <div className="inline" style={{ justifyContent: 'space-between' }}>
           <div>
             <div className="subtle">合計金額（税抜・目安）</div>
-            <div className="kpi-value" style={{ fontSize: 36 }}>
+            <div className="kpi-value">
               {formatCurrency(total, 'JPY')}
             </div>
             <div className="field-hint">

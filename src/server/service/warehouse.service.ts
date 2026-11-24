@@ -2,25 +2,25 @@ import { randomUUID } from 'node:crypto';
 import {
   BusinessRuleViolationError,
   ValidationError,
-} from '../domain/errors/domain.error';
-import type { Actor } from '../domain/entities/actor.entity';
+} from '../domain/errors/domain.error.js';
+import type { Actor } from '../domain/entities/actor.entity.js';
 import type {
   InspectAndReceiveInput,
   InspectAndReceiveResult,
-} from '../domain/entities/purchase-order.entity';
-import type { LotEntity } from '../domain/entities/lot.entity';
+} from '../domain/entities/purchase-order.entity.js';
+import type { LotEntity } from '../domain/entities/lot.entity.js';
 import {
   LOT_STATUS,
   PURCHASE_ORDER_STATUS,
   SALES_ORDER_LINE_STATUS,
-} from '../domain/entities/status';
-import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface';
-import { isValidDateString, todayInTokyo } from '../config/date';
+} from '../domain/entities/status.js';
+import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface.js';
+import { isValidDateString, todayInTokyo } from '../config/date.js';
 import {
   ensureFound,
   ensureNonNegativeInteger,
   syncSalesOrderStatus,
-} from './service-support';
+} from './service-support.js';
 
 export class WarehouseService {
   constructor(private readonly uow: IUnitOfWork) {}

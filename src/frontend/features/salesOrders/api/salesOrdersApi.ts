@@ -9,7 +9,13 @@ import type {
 } from '../../../types/api';
 
 export interface SalesOrderQuery {
+  customer?: string;
   status?: string;
+  orderDateFrom?: string;
+  orderDateTo?: string;
+  purchaseOrderDate?: string;
+  arrivalDate?: string;
+  receivedDate?: string;
   search?: string;
   limit?: number;
   offset?: number;
@@ -17,7 +23,13 @@ export interface SalesOrderQuery {
 
 export function getSalesOrders(query: SalesOrderQuery = {}) {
   const params = new URLSearchParams();
+  if (query.customer) params.set('customer', query.customer);
   if (query.status) params.set('status', query.status);
+  if (query.orderDateFrom) params.set('orderDateFrom', query.orderDateFrom);
+  if (query.orderDateTo) params.set('orderDateTo', query.orderDateTo);
+  if (query.purchaseOrderDate) params.set('purchaseOrderDate', query.purchaseOrderDate);
+  if (query.arrivalDate) params.set('arrivalDate', query.arrivalDate);
+  if (query.receivedDate) params.set('receivedDate', query.receivedDate);
   if (query.search) params.set('search', query.search);
   if (query.limit) params.set('limit', String(query.limit));
   if (query.offset) params.set('offset', String(query.offset));

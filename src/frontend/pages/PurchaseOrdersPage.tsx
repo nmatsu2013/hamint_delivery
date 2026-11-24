@@ -9,11 +9,9 @@ import {
 } from '../features/purchaseOrders/api/purchaseOrdersApi';
 import { PurchaseOrdersTable } from '../features/purchaseOrders/components/PurchaseOrdersTable';
 import { getSalesOrderDetail, getSalesOrders } from '../features/salesOrders/api/salesOrdersApi';
-import { useAuthStore } from '../store/authStore';
 import { formatCurrency, formatNumber } from '../lib/format';
 
 export function PurchaseOrdersPage() {
-  const role = useAuthStore((state) => state.actor?.role);
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const initialOrderId = searchParams.get('orderId') ?? '';
@@ -24,17 +22,15 @@ export function PurchaseOrdersPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<unknown>(null);
 
-  const canCreate = role === 'purchasing' || role === 'admin';
   const poQuery = useQuery({ queryKey: ['purchase-orders'], queryFn: () => getPurchaseOrders() });
   const ordersQuery = useQuery({
     queryKey: ['sales-orders', '受付'],
     queryFn: () => getSalesOrders({ status: '受付', limit: 200 }),
-    enabled: canCreate,
   });
   const orderDetailQuery = useQuery({
     queryKey: ['sales-order-detail', selectedOrderId],
     queryFn: () => getSalesOrderDetail(selectedOrderId),
-    enabled: canCreate && Boolean(selectedOrderId),
+    enabled: Boolean(selectedOrderId),
   });
 
   useEffect(() => {
@@ -98,8 +94,7 @@ export function PurchaseOrdersPage() {
       {error ? <ErrorAlert error={error} /> : null}
       {createMutation.isError ? <ErrorAlert error={createMutation.error} /> : null}
 
-      {canCreate ? (
-        <section className="card card-pad">
+      <section className="card card-pad">
           <h2 className="section-title">受注明細から発注を作成</h2>
           <div className="form-grid">
             <div className="field span-2">
@@ -198,8 +193,7 @@ export function PurchaseOrdersPage() {
               この受注には「受付」の明細がありません。
             </div>
           ) : null}
-        </section>
-      ) : null}
+      </section>
 
       <section className="card">
         <div className="card-header">
@@ -207,11 +201,9 @@ export function PurchaseOrdersPage() {
             <h2 className="card-title">発注一覧</h2>
             <p className="card-subtitle">仕入先ごとにまとめた発注の状況です</p>
           </div>
-          {role === 'warehouse' ? (
-            <Link className="btn btn-secondary btn-sm" to="/warehouse">
-              入庫・検品へ
-            </Link>
-          ) : null}
+          <Link className="btn btn-secondary btn-sm" to="/warehouse">
+            入庫・検品へ
+          </Link>
         </div>
         {poQuery.isLoading ? <LoadingState /> : null}
         {poQuery.isError ? (
@@ -220,7 +212,7 @@ export function PurchaseOrdersPage() {
           </div>
         ) : null}
         {poQuery.data ? (
-          <PurchaseOrdersTable items={poQuery.data.items} showAmount={role !== 'warehouse'} />
+          <PurchaseOrdersTable items={poQuery.data.items} showAmount />
         ) : null}
       </section>
     </main>

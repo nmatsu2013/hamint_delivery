@@ -1,6 +1,6 @@
 import type { Context } from 'hono';
 import { ZodError, type ZodType } from 'zod';
-import { ValidationError } from '../domain/errors/domain.error';
+import { ValidationError } from '../domain/errors/domain.error.js';
 
 function toValidationError(error: ZodError): ValidationError {
   const flattened = error.flatten();

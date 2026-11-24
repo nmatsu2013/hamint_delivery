@@ -1,4 +1,4 @@
-import type { AuditLogEntity } from '../entities/audit-log.entity';
+import type { AuditLogEntity } from '../entities/audit-log.entity.js';
 
 export interface AuditLogListParams {
   tableName?: string;

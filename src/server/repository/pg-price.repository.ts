@@ -1,5 +1,5 @@
-import type { IPriceRepository } from '../domain/repositories/price.repository.interface';
-import { toNumber, type Queryable } from './database';
+import type { IPriceRepository } from '../domain/repositories/price.repository.interface.js';
+import { toNumber, type Queryable } from './database.js';
 
 export class PgPriceRepository implements IPriceRepository {
   constructor(private readonly db: Queryable) {}

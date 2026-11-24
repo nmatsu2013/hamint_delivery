@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { PageHeader } from '../components/elements/PageHeader';
 import { StatusPill } from '../components/elements/StatusPill';
@@ -10,16 +10,13 @@ import {
   inspectPurchaseOrderLine,
 } from '../features/purchaseOrders/api/purchaseOrdersApi';
 import { getAvailableLots } from '../features/warehouse/api/warehouseApi';
-import { useAuthStore } from '../store/authStore';
 import { formatDate, formatNumber, todayInputValue } from '../lib/format';
 import type { PurchaseOrderLine } from '../types/api';
 
 export function WarehousePage() {
-  const role = useAuthStore((state) => state.actor?.role);
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const initialPoId = searchParams.get('poId') ?? '';
-  const canEdit = role === 'warehouse' || role === 'admin';
 
   const [poId, setPoId] = useState(initialPoId);
   const [selectedLine, setSelectedLine] = useState<PurchaseOrderLine | null>(null);
@@ -136,17 +133,16 @@ export function WarehousePage() {
         title="入庫・検品・ロット管理"
         description="発注明細ごとに良品・不良・破損を記録し、良品をロットとして登録します。"
         showDate={false}
+        actions={
+          <Link to="/shipments" className="btn btn-secondary btn-sm">
+            出荷・配送へ
+          </Link>
+        }
       />
 
       {message ? <SuccessAlert message={message} /> : null}
       {error ? <ErrorAlert error={error} /> : null}
       {inspectMutation.isError ? <ErrorAlert error={inspectMutation.error} /> : null}
-      {!canEdit ? (
-        <div className="alert alert-info">
-          入庫・検品の登録は倉庫または管理者のみ実行できます。閲覧のみ可能です。
-        </div>
-      ) : null}
-
       <section className="card card-pad">
         <h2 className="section-title">発注を選択</h2>
         <div className="form-grid">
@@ -201,7 +197,7 @@ export function WarehousePage() {
                       <td className="nowrap">{formatDate(line.receivedDate)}</td>
                       <td>{line.claimStatus ?? '—'}</td>
                       <td className="align-right">
-                        {line.receivedDate === null && canEdit ? (
+                        {line.receivedDate === null ? (
                           <button
                             type="button"
                             className="btn btn-secondary btn-sm"
@@ -339,7 +335,7 @@ export function WarehousePage() {
               <button
                 type="button"
                 className="btn btn-primary"
-                disabled={!canEdit || inspectMutation.isPending}
+                disabled={inspectMutation.isPending}
                 onClick={submit}
               >
                 {inspectMutation.isPending ? '登録中…' : '検品を登録'}

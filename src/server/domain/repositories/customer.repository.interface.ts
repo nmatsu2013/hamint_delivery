@@ -1,4 +1,4 @@
-import type { CustomerAddressEntity, CustomerEntity } from '../entities/customer.entity';
+import type { CustomerAddressEntity, CustomerEntity } from '../entities/customer.entity.js';
 
 export interface ICustomerRepository {
   list(): Promise<CustomerEntity[]>;

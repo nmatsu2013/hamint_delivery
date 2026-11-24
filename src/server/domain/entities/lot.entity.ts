@@ -1,4 +1,4 @@
-import type { LotMovementType, LotStatus } from './status';
+import type { LotMovementType, LotStatus } from './status.js';
 
 export interface LotEntity {
   id: string;

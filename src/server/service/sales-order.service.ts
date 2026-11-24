@@ -2,28 +2,34 @@ import { randomUUID } from 'node:crypto';
 import {
   BusinessRuleViolationError,
   ValidationError,
-} from '../domain/errors/domain.error';
-import type { Actor } from '../domain/entities/actor.entity';
+} from '../domain/errors/domain.error.js';
+import type { Actor } from '../domain/entities/actor.entity.js';
 import type {
   CreateSalesOrderInput,
   SalesOrderEntity,
   SalesOrderLineEntity,
-} from '../domain/entities/sales-order.entity';
-import { calculateTotalAmount } from '../domain/entities/sales-order.entity';
-import { SALES_ORDER_LINE_STATUS } from '../domain/entities/status';
-import { normalizeSalesOrderStatus } from '../domain/entities/status-mapper';
-import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface';
-import type { PurchaseOrderEntity } from '../domain/entities/purchase-order.entity';
-import type { ImportApplicationEntity } from '../domain/entities/import-application.entity';
-import type { ShipmentEntity } from '../domain/entities/shipment.entity';
-import type { InvoiceEntity } from '../domain/entities/invoice.entity';
-import { isValidDateString, todayAsUtcDate, todayInTokyo } from '../config/date';
-import { clampPageSize, parseOffset } from '../config/constants';
-import { ensureFound, ensurePositiveInteger } from './service-support';
-import { PriceService } from './price.service';
+} from '../domain/entities/sales-order.entity.js';
+import { calculateTotalAmount } from '../domain/entities/sales-order.entity.js';
+import { SALES_ORDER_LINE_STATUS } from '../domain/entities/status.js';
+import { normalizeSalesOrderStatus } from '../domain/entities/status-mapper.js';
+import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface.js';
+import type { PurchaseOrderEntity } from '../domain/entities/purchase-order.entity.js';
+import type { ImportApplicationEntity } from '../domain/entities/import-application.entity.js';
+import type { ShipmentEntity } from '../domain/entities/shipment.entity.js';
+import type { InvoiceEntity } from '../domain/entities/invoice.entity.js';
+import { isValidDateString, todayAsUtcDate, todayInTokyo } from '../config/date.js';
+import { clampPageSize, parseOffset } from '../config/constants.js';
+import { ensureFound, ensurePositiveInteger } from './service-support.js';
+import { PriceService } from './price.service.js';
 
 export interface SalesOrderListQuery {
+  customer?: string;
   status?: string;
+  orderDateFrom?: string;
+  orderDateTo?: string;
+  purchaseOrderDate?: string;
+  arrivalDate?: string;
+  receivedDate?: string;
   search?: string;
   limit?: number;
   offset?: number;
@@ -62,9 +68,18 @@ export class SalesOrderService {
   async list(query: SalesOrderListQuery): Promise<SalesOrderListResult> {
     const limit = clampPageSize(query.limit);
     const offset = parseOffset(query.offset);
+    if (query.orderDateFrom && query.orderDateTo && query.orderDateFrom > query.orderDateTo) {
+      throw new ValidationError('受注日の開始日は終了日以前を指定してください');
+    }
     const status = query.status ? normalizeSalesOrderStatus(query.status) : undefined;
     const result = await this.uow.repos.salesOrders.list({
+      customer: query.customer?.trim() || undefined,
       status,
+      orderDateFrom: query.orderDateFrom,
+      orderDateTo: query.orderDateTo,
+      purchaseOrderDate: query.purchaseOrderDate,
+      arrivalDate: query.arrivalDate,
+      receivedDate: query.receivedDate,
       search: query.search?.trim() || undefined,
       limit,
       offset,

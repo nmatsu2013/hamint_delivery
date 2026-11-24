@@ -1,15 +1,15 @@
-import type { RepositoryContext } from '../domain/repositories/unit-of-work.interface';
-import type { Queryable } from './database';
-import { PgAuditLogRepository } from './pg-audit-log.repository';
-import { PgCustomerRepository } from './pg-customer.repository';
-import { PgImportApplicationRepository } from './pg-import-application.repository';
-import { PgInvoiceRepository } from './pg-invoice.repository';
-import { PgLotRepository } from './pg-lot.repository';
-import { PgPriceRepository } from './pg-price.repository';
-import { PgProductRepository } from './pg-product.repository';
-import { PgPurchaseOrderRepository } from './pg-purchase-order.repository';
-import { PgSalesOrderRepository } from './pg-sales-order.repository';
-import { PgShipmentRepository } from './pg-shipment.repository';
+import type { RepositoryContext } from '../domain/repositories/unit-of-work.interface.js';
+import type { Queryable } from './database.js';
+import { PgAuditLogRepository } from './pg-audit-log.repository.js';
+import { PgCustomerRepository } from './pg-customer.repository.js';
+import { PgImportApplicationRepository } from './pg-import-application.repository.js';
+import { PgInvoiceRepository } from './pg-invoice.repository.js';
+import { PgLotRepository } from './pg-lot.repository.js';
+import { PgPriceRepository } from './pg-price.repository.js';
+import { PgProductRepository } from './pg-product.repository.js';
+import { PgPurchaseOrderRepository } from './pg-purchase-order.repository.js';
+import { PgSalesOrderRepository } from './pg-sales-order.repository.js';
+import { PgShipmentRepository } from './pg-shipment.repository.js';
 
 export function createRepositories(db: Queryable): RepositoryContext {
   return {

@@ -8,7 +8,13 @@ export const PaginationSchema = z.object({
 });
 
 export const SalesOrderListQuerySchema = PaginationSchema.extend({
+  customer: z.string().optional(),
   status: z.string().optional(),
+  orderDateFrom: dateString.optional(),
+  orderDateTo: dateString.optional(),
+  purchaseOrderDate: dateString.optional(),
+  arrivalDate: dateString.optional(),
+  receivedDate: dateString.optional(),
   search: z.string().optional(),
 });
 

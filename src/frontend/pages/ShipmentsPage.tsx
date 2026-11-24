@@ -13,7 +13,6 @@ import {
   markShipmentDelivered,
 } from '../features/shipments/api/shipmentsApi';
 import { ShipmentsTable } from '../features/shipments/components/ShipmentsTable';
-import { useAuthStore } from '../store/authStore';
 import { formatNumber, todayInputValue } from '../lib/format';
 
 interface DomesticLineInput {
@@ -22,12 +21,9 @@ interface DomesticLineInput {
 }
 
 export function ShipmentsPage() {
-  const role = useAuthStore((state) => state.actor?.role);
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const orderIdParam = searchParams.get('orderId') ?? '';
-  const canShipDomestic = role === 'warehouse' || role === 'admin';
-  const canShipInternational = role === 'purchasing' || role === 'admin';
 
   const [orderId, setOrderId] = useState(orderIdParam);
   const [carrier, setCarrier] = useState('ヤマト運輸');
@@ -49,22 +45,19 @@ export function ShipmentsPage() {
   const ordersQuery = useQuery({
     queryKey: ['sales-orders', '入荷済'],
     queryFn: () => getSalesOrders({ status: '入荷済', limit: 200 }),
-    enabled: canShipDomestic,
   });
   const orderDetailQuery = useQuery({
     queryKey: ['sales-order-detail', orderId],
     queryFn: () => getSalesOrderDetail(orderId),
-    enabled: canShipDomestic && Boolean(orderId),
+    enabled: Boolean(orderId),
   });
   const lotsQuery = useQuery({
     queryKey: ['available-lots'],
     queryFn: () => getAvailableLots(),
-    enabled: canShipDomestic,
   });
   const poQuery = useQuery({
     queryKey: ['purchase-orders', '発注済'],
     queryFn: () => getPurchaseOrders({ status: '発注済' }),
-    enabled: canShipInternational,
   });
 
   useEffect(() => {
@@ -203,8 +196,7 @@ export function ShipmentsPage() {
       {message ? <SuccessAlert message={message} /> : null}
       {error ? <ErrorAlert error={error} /> : null}
 
-      {canShipDomestic ? (
-        <section className="card card-pad">
+      <section className="card card-pad">
           <h2 className="section-title">国内出荷を登録</h2>
           <div className="form-grid">
             <div className="field span-2">
@@ -343,17 +335,15 @@ export function ShipmentsPage() {
             <button
               type="button"
               className="btn btn-primary"
-              disabled={!canShipDomestic || domesticMutation.isPending}
+              disabled={domesticMutation.isPending}
               onClick={submitDomestic}
             >
               {domesticMutation.isPending ? '登録中…' : '国内出荷を確定'}
             </button>
           </div>
-        </section>
-      ) : null}
+      </section>
 
-      {canShipInternational ? (
-        <section className="card card-pad">
+      <section className="card card-pad">
           <h2 className="section-title">国際輸送を登録</h2>
           <div className="form-grid">
             <div className="field span-2">
@@ -431,14 +421,13 @@ export function ShipmentsPage() {
             <button
               type="button"
               className="btn btn-primary"
-              disabled={!canShipInternational || internationalMutation.isPending}
+              disabled={internationalMutation.isPending}
               onClick={submitInternational}
             >
               {internationalMutation.isPending ? '登録中…' : '国際輸送を登録'}
             </button>
           </div>
-        </section>
-      ) : null}
+      </section>
 
       <section className="card">
         <div className="card-header">

@@ -1,14 +1,14 @@
-import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface';
-import { AuditLogService } from './audit-log.service';
-import { BillingService } from './billing.service';
-import { DashboardService } from './dashboard.service';
-import { ImportApplicationService } from './import-application.service';
-import { MasterDataService } from './master-data.service';
-import { PurchaseOrderService } from './purchase-order.service';
-import { SalesOrderService } from './sales-order.service';
-import { ShipmentService } from './shipment.service';
-import { TraceabilityService } from './traceability.service';
-import { WarehouseService } from './warehouse.service';
+import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface.js';
+import { AuditLogService } from './audit-log.service.js';
+import { BillingService } from './billing.service.js';
+import { DashboardService } from './dashboard.service.js';
+import { ImportApplicationService } from './import-application.service.js';
+import { MasterDataService } from './master-data.service.js';
+import { PurchaseOrderService } from './purchase-order.service.js';
+import { SalesOrderService } from './sales-order.service.js';
+import { ShipmentService } from './shipment.service.js';
+import { TraceabilityService } from './traceability.service.js';
+import { WarehouseService } from './warehouse.service.js';
 
 export interface Services {
   salesOrders: SalesOrderService;

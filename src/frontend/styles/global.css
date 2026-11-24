@@ -270,28 +270,6 @@ textarea {
   justify-content: space-between;
 }
 
-.status-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.filter-pill {
-  font-size: 15px;
-  color: var(--text-main);
-  background: #eaf0f5;
-  border: none;
-  border-radius: 20px;
-  padding: 8px 16px;
-  cursor: pointer;
-}
-
-.filter-pill.active {
-  color: #fff;
-  background: var(--header-bg);
-  font-weight: 700;
-}
-
 .search-box {
   display: flex;
   align-items: center;
@@ -784,32 +762,36 @@ table.data-table tbody tr:hover {
   font-size: 15px;
 }
 
-.role-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+.password-input-wrap {
+  position: relative;
 }
 
-.role-button {
-  border: 1px solid #cbd6e2;
-  background: #fff;
-  border-radius: 12px;
-  padding: 12px 14px;
-  text-align: left;
-  cursor: pointer;
+.password-input-wrap input {
+  padding-right: 72px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  border: none;
+  border-radius: 6px;
+  background: #eaf0f5;
+  color: var(--accent-text);
+  padding: 5px 10px;
+  font-size: 13px;
   font-weight: 700;
+  cursor: pointer;
 }
 
-.role-button:hover {
-  border-color: var(--accent-button);
-  background: #f2faf8;
+.password-toggle:hover {
+  background: #dfe9ef;
 }
 
-.role-button span {
-  display: block;
-  font-size: 12px;
-  color: var(--text-muted);
-  font-weight: 400;
+.password-toggle:focus-visible {
+  outline: 2px solid var(--accent-button);
+  outline-offset: 2px;
 }
 
 .tabs {
@@ -879,6 +861,662 @@ table.data-table tbody tr:hover {
   }
 }
 
+/* ---- Compact header / sales orders list (spec/design_sample) ---- */
+.app-header {
+  gap: 4px 20px;
+  padding: 8px 32px;
+}
+
+.brand {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.app-nav {
+  gap: 2px 16px;
+}
+
+.nav-link {
+  font-size: 12px;
+  padding: 5px 0;
+  border-bottom-width: 2px;
+}
+
+.header-action {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 6px;
+}
+
+.header-user {
+  font-size: 12px;
+  gap: 12px;
+}
+
+.header-ghost {
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border-color: #5b7090;
+}
+
+.orders-page {
+  gap: 12px;
+  padding: 16px 32px 24px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.orders-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 10px 24px;
+}
+
+.orders-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.orders-description {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.summary-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.summary-chip {
+  min-width: 128px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 14px;
+  border-left: 3px solid var(--accent-button);
+  border-radius: 8px;
+  background: var(--card-bg);
+  box-shadow: 0 0 0 1px var(--border-light);
+}
+
+.summary-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.summary-value {
+  margin-left: auto;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.summary-unit {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.orders-panel {
+  background: var(--card-bg);
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px var(--border-light);
+  overflow: hidden;
+}
+
+.orders-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 10px 14px;
+}
+
+.order-filter-control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.order-filter-item {
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  border: 1px solid #cbd6e2;
+  border-radius: 6px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.order-filter-item > span {
+  align-self: stretch;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 8px;
+  border-right: 1px solid #d9e2eb;
+  background: #eaf0f5;
+  color: var(--text-main);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.order-filter-item select,
+.order-filter-item input {
+  height: 28px;
+  border: none;
+  border-radius: 0;
+  background: #fff;
+  color: var(--text-main);
+  padding: 3px 8px;
+  font-size: 12px;
+  outline: none;
+}
+
+.order-filter-item:focus-within {
+  border-color: var(--accent-button);
+  box-shadow: 0 0 0 2px rgba(0, 164, 151, 0.12);
+}
+
+.order-filter-customer input {
+  width: 126px;
+}
+
+.order-filter-status select {
+  width: 108px;
+}
+
+.order-filter-date input {
+  width: 116px;
+}
+
+.order-filter-date-range input {
+  width: 116px;
+}
+
+.order-filter-date-range b {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.order-filter-clear {
+  height: 30px;
+  border: none;
+  background: transparent;
+  color: var(--accent-text);
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.orders-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.orders-tools .search-box {
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 6px;
+  gap: 6px;
+}
+
+.orders-tools .search-box input {
+  width: 190px;
+  font-size: 12px;
+}
+
+.orders-tools .search-box svg {
+  width: 13px;
+  height: 13px;
+}
+
+.btn-csv {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent-button);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.orders-panel .loading-state {
+  padding: 28px 16px;
+  font-size: 12px;
+}
+
+.orders-panel .empty-state {
+  padding: 28px 16px;
+  font-size: 12px;
+}
+
+.orders-error {
+  padding: 10px 14px;
+}
+
+.orders-table {
+  min-width: 1200px;
+  font-size: 12px;
+}
+
+.orders-table th {
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #3f5068;
+  font-weight: 700;
+}
+
+.orders-table th:first-child {
+  padding-left: 14px;
+}
+
+.orders-table th:last-child {
+  padding-right: 14px;
+}
+
+.orders-table td {
+  padding: 6px 10px;
+  border-top: 1px solid #e3e9f0;
+  font-size: 12px;
+}
+
+.orders-table td:first-child {
+  padding-left: 14px;
+}
+
+.orders-table td:last-child {
+  padding-right: 14px;
+}
+
+.orders-table .mono {
+  font-size: 12px;
+}
+
+.orders-table .pill {
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+/* 基本テーブル（.data-table）の余白より優先させる */
+.orders-page .orders-table th,
+.orders-page .orders-table td {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.orders-page .orders-table th:first-child,
+.orders-page .orders-table td:first-child {
+  padding-left: 14px;
+}
+
+.orders-page .orders-table th:last-child,
+.orders-page .orders-table td:last-child {
+  padding-right: 14px;
+}
+
+.orders-page .orders-table .pill {
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.progress-bars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.progress-seg {
+  width: 9px;
+  height: 5px;
+  border-radius: 2px;
+  background: #d6e0ea;
+}
+
+.progress-seg.filled {
+  background: var(--accent-button);
+}
+
+.progress-seg.filled.seg-0 { background: #16a34a; }
+.progress-seg.filled.seg-1 { background: #65a30d; }
+.progress-seg.filled.seg-2 { background: #84cc16; }
+.progress-seg.filled.seg-3 { background: #eab308; }
+.progress-seg.filled.seg-4 { background: #f59e0b; }
+.progress-seg.filled.seg-5 { background: #ea580c; }
+.progress-seg.filled.seg-6 { background: #f43f5e; }
+.progress-seg.filled.seg-7 { background: #ec4899; }
+
+.progress-label {
+  margin-left: 6px;
+  color: var(--text-muted);
+}
+
+.btn-open {
+  display: inline-block;
+  padding: 4px 12px;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent-button);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.orders-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-top: 1px solid #e3e9f0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pager button {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--accent-text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pager button:disabled {
+  color: #aab6c4;
+  cursor: default;
+}
+
+/* ---- Compact workspace pages (aligned with the sales orders list) ---- */
+.page:not(.orders-page) {
+  gap: 12px;
+  padding: 16px 32px 24px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.page:not(.orders-page) .page-header {
+  align-items: flex-end;
+  gap: 10px 24px;
+}
+
+.page:not(.orders-page) .eyebrow {
+  display: none;
+}
+
+.page:not(.orders-page) .page-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.page:not(.orders-page) .page-description {
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+.page:not(.orders-page) .date-box {
+  border-radius: 8px;
+  padding: 6px 14px;
+}
+
+.page:not(.orders-page) .date-box-label,
+.page:not(.orders-page) .date-box-value {
+  font-size: 12px;
+}
+
+.page:not(.orders-page) .card {
+  border-radius: 10px;
+}
+
+.page:not(.orders-page) .card-pad {
+  padding: 14px;
+}
+
+.page:not(.orders-page) .card-header {
+  padding: 12px 14px 10px;
+  gap: 8px 16px;
+}
+
+.page:not(.orders-page) .card-title,
+.page:not(.orders-page) .section-title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.page:not(.orders-page) .section-title {
+  margin-bottom: 8px;
+}
+
+.page:not(.orders-page) .card-subtitle {
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+.page:not(.orders-page) .kpi-grid {
+  gap: 10px;
+}
+
+.page:not(.orders-page) .kpi-card {
+  border-radius: 8px;
+  border-top-width: 3px;
+  padding: 10px 14px;
+}
+
+.page:not(.orders-page) .kpi-label,
+.page:not(.orders-page) .kpi-unit {
+  font-size: 12px;
+}
+
+.page:not(.orders-page) .kpi-value {
+  font-size: 24px !important;
+}
+
+.page:not(.orders-page) table.data-table {
+  font-size: 12px;
+}
+
+.page:not(.orders-page) table.data-table th,
+.page:not(.orders-page) table.data-table td {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.page:not(.orders-page) table.data-table th:first-child,
+.page:not(.orders-page) table.data-table td:first-child {
+  padding-left: 14px;
+}
+
+.page:not(.orders-page) table.data-table th:last-child,
+.page:not(.orders-page) table.data-table td:last-child {
+  padding-right: 14px;
+}
+
+.page:not(.orders-page) .mono,
+.page:not(.orders-page) .subtle {
+  font-size: 12px;
+}
+
+.page:not(.orders-page) .pill {
+  border-radius: 10px;
+  padding: 2px 10px;
+  font-size: 12px;
+}
+
+.page:not(.orders-page) .table-footer {
+  gap: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+}
+
+.page:not(.orders-page) .btn {
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.page:not(.orders-page) .btn-sm {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.page:not(.orders-page) .btn-row,
+.page:not(.orders-page) .inline {
+  gap: 8px;
+}
+
+.page:not(.orders-page) .alert {
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+.page:not(.orders-page) .empty-state,
+.page:not(.orders-page) .loading-state {
+  padding: 28px 16px;
+  font-size: 12px;
+}
+
+.page:not(.orders-page) .stack {
+  gap: 10px;
+}
+
+.page:not(.orders-page) .split {
+  gap: 12px;
+}
+
+.page:not(.orders-page) .form-grid {
+  gap: 10px 14px;
+}
+
+.page:not(.orders-page) .field {
+  gap: 4px;
+}
+
+.page:not(.orders-page) .field label,
+.page:not(.orders-page) .field-hint,
+.page:not(.orders-page) .checkbox-item {
+  font-size: 12px;
+}
+
+.page:not(.orders-page) .field input,
+.page:not(.orders-page) .field select,
+.page:not(.orders-page) .field textarea {
+  min-height: 30px;
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 12px;
+}
+
+.page:not(.orders-page) .field textarea {
+  min-height: 64px;
+}
+
+.page:not(.orders-page) .line-editor {
+  gap: 8px;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.page:not(.orders-page) .line-editor + .line-editor {
+  margin-top: 8px;
+}
+
+.page:not(.orders-page) .stepper {
+  padding-top: 4px;
+}
+
+.page:not(.orders-page) .step {
+  gap: 4px;
+}
+
+.page:not(.orders-page) .step::before,
+.page:not(.orders-page) .step::after {
+  top: 12px;
+  height: 2px;
+}
+
+.page:not(.orders-page) .step-dot {
+  width: 26px;
+  height: 26px;
+  border-width: 2px;
+  font-size: 11px;
+}
+
+.page:not(.orders-page) .step-label,
+.page:not(.orders-page) .step-date {
+  font-size: 10px;
+}
+
+.page:not(.orders-page) .info-grid {
+  gap: 10px 14px;
+}
+
+.page:not(.orders-page) .info-item {
+  gap: 2px;
+}
+
+.page:not(.orders-page) .info-label {
+  font-size: 11px;
+}
+
+.page:not(.orders-page) .info-value {
+  font-size: 12px;
+}
+
+.page:not(.orders-page) .tabs {
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.page:not(.orders-page) .tab {
+  border-radius: 14px;
+  padding: 4px 12px;
+  font-size: 12px;
+}
+
+.page:not(.orders-page) .record-list {
+  gap: 6px;
+}
+
+.page:not(.orders-page) .record {
+  border-radius: 8px;
+  padding: 8px 12px;
+  gap: 6px;
+}
+
+.page:not(.orders-page) .record-meta {
+  font-size: 11px;
+}
+
 @media (max-width: 720px) {
   .app-header {
     padding: 12px 16px;
@@ -886,14 +1524,19 @@ table.data-table tbody tr:hover {
   .page {
     padding: 24px 16px 40px;
   }
+  .orders-page {
+    padding: 12px 12px 24px;
+  }
+  .page:not(.orders-page) {
+    padding: 12px 12px 24px;
+  }
   .page-title {
     font-size: 30px;
   }
   .kpi-grid,
   .form-grid,
   .form-grid.three,
-  .info-grid,
-  .role-grid {
+  .info-grid {
     grid-template-columns: 1fr;
   }
   .field.span-2 {

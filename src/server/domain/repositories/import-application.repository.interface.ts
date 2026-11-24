@@ -1,7 +1,7 @@
 import type {
   ImportApplicationEntity,
   UpdateImportApplicationStatusInput,
-} from '../entities/import-application.entity';
+} from '../entities/import-application.entity.js';
 
 export interface ImportApplicationListParams {
   status?: string;

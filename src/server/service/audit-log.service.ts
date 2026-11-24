@@ -1,5 +1,5 @@
-import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface';
-import { clampPageSize, parseOffset } from '../config/constants';
+import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface.js';
+import { clampPageSize, parseOffset } from '../config/constants.js';
 
 export interface AuditLogListQuery {
   tableName?: string;

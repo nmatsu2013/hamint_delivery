@@ -6,14 +6,11 @@ import { StatusPill } from '../components/elements/StatusPill';
 import { ErrorAlert, LoadingState, SuccessAlert } from '../components/elements/StateViews';
 import { ProgressStepper } from '../features/salesOrders/components/ProgressStepper';
 import { cancelSalesOrder, getSalesOrderDetail } from '../features/salesOrders/api/salesOrdersApi';
-import { useAuthStore } from '../store/authStore';
 import { formatCurrency, formatDate, formatNumber } from '../lib/format';
 
 export function OrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
-  const role = useAuthStore((state) => state.actor?.role);
-  const canViewCost = role === 'purchasing' || role === 'accounting' || role === 'admin';
   const [message, setMessage] = useState<string | null>(null);
 
   const detailQuery = useQuery({
@@ -52,8 +49,7 @@ export function OrderDetailPage() {
         {order ? (
           <div className="btn-row">
             <StatusPill status={order.status} />
-            {(role === 'sales' || role === 'admin') &&
-            order.status !== '取消' &&
+            {order.status !== '取消' &&
             order.status !== '出荷済' &&
             order.status !== '完了' ? (
               <button
@@ -167,11 +163,9 @@ export function OrderDetailPage() {
                 <h2 className="card-title">発注情報</h2>
                 <p className="card-subtitle">受注明細に紐づく仕入先への発注</p>
               </div>
-              {(role === 'purchasing' || role === 'admin') ? (
-                <Link className="btn btn-secondary btn-sm" to={`/purchase-orders?orderId=${order.id}`}>
-                  発注を作成・確認
-                </Link>
-              ) : null}
+              <Link className="btn btn-secondary btn-sm" to={`/purchase-orders?orderId=${order.id}`}>
+                発注を作成・確認
+              </Link>
             </div>
             {detail.purchaseOrders.length === 0 ? (
               <div className="empty-state">まだ発注がありません</div>
@@ -186,7 +180,7 @@ export function OrderDetailPage() {
                       <th>納期回答</th>
                       <th>状態</th>
                       <th className="align-right">数量</th>
-                      {canViewCost ? <th className="align-right">金額</th> : null}
+                      <th className="align-right">金額</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -202,11 +196,9 @@ export function OrderDetailPage() {
                         <td className="align-right">
                           {formatNumber(po.lines.reduce((total, line) => total + line.quantity, 0))}
                         </td>
-                        {canViewCost ? (
-                          <td className="align-right amount">
-                            {formatCurrency(po.totalAmount, po.currency)}
-                          </td>
-                        ) : null}
+                        <td className="align-right amount">
+                          {formatCurrency(po.totalAmount, po.currency)}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -221,11 +213,9 @@ export function OrderDetailPage() {
                 <h2 className="card-title">輸入申請・国際輸送</h2>
                 <p className="card-subtitle">書類準備から通関許可までの記録</p>
               </div>
-              {role === 'purchasing' || role === 'admin' ? (
-                <Link className="btn btn-secondary btn-sm" to={`/imports?orderId=${order.id}`}>
-                  輸入申請を確認
-                </Link>
-              ) : null}
+              <Link className="btn btn-secondary btn-sm" to={`/imports?orderId=${order.id}`}>
+                輸入申請を確認
+              </Link>
             </div>
             {detail.importApplications.length === 0 ? (
               <div className="empty-state">輸入申請はまだありません</div>
@@ -273,11 +263,9 @@ export function OrderDetailPage() {
                 <h2 className="card-title">出荷・配送</h2>
                 <p className="card-subtitle">ロット引当と追跡番号の記録</p>
               </div>
-              {role === 'warehouse' || role === 'admin' ? (
-                <Link className="btn btn-secondary btn-sm" to={`/shipments?orderId=${order.id}`}>
-                  出荷を登録
-                </Link>
-              ) : null}
+              <Link className="btn btn-secondary btn-sm" to={`/shipments?orderId=${order.id}`}>
+                出荷を登録
+              </Link>
             </div>
             {detail.shipments.length === 0 ? (
               <div className="empty-state">配送はまだありません</div>
@@ -330,11 +318,9 @@ export function OrderDetailPage() {
                 <h2 className="card-title">請求・入金</h2>
                 <p className="card-subtitle">未入金額は請求金額と入金合計から算出します</p>
               </div>
-              {role === 'accounting' || role === 'admin' ? (
-                <Link className="btn btn-secondary btn-sm" to={`/billing?orderId=${order.id}`}>
-                  請求・入金を確認
-                </Link>
-              ) : null}
+              <Link className="btn btn-secondary btn-sm" to={`/billing?orderId=${order.id}`}>
+                請求・入金を確認
+              </Link>
             </div>
             {detail.invoices.length === 0 ? (
               <div className="empty-state">請求はまだありません</div>

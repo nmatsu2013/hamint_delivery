@@ -1,12 +1,12 @@
-import { BusinessRuleViolationError } from '../domain/errors/domain.error';
+import { BusinessRuleViolationError } from '../domain/errors/domain.error.js';
 import type {
   LotEntity,
   LotMovementEntity,
   TraceabilityRowEntity,
-} from '../domain/entities/lot.entity';
-import { normalizeLotStatus } from '../domain/entities/status-mapper';
-import type { ILotRepository } from '../domain/repositories/lot.repository.interface';
-import { toNumber, type Queryable } from './database';
+} from '../domain/entities/lot.entity.js';
+import { normalizeLotStatus } from '../domain/entities/status-mapper.js';
+import type { ILotRepository } from '../domain/repositories/lot.repository.interface.js';
+import { toNumber, type Queryable } from './database.js';
 
 interface LotRow {
   id: string;

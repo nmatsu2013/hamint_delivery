@@ -1,9 +1,9 @@
-import type { AuditLogEntity } from '../domain/entities/audit-log.entity';
+import type { AuditLogEntity } from '../domain/entities/audit-log.entity.js';
 import type {
   AuditLogListParams,
   IAuditLogRepository,
-} from '../domain/repositories/audit-log.repository.interface';
-import { toNumber, type Queryable } from './database';
+} from '../domain/repositories/audit-log.repository.interface.js';
+import { toNumber, type Queryable } from './database.js';
 
 interface AuditLogRow {
   id: string;
@@ -11,7 +11,6 @@ interface AuditLogRow {
   record_id: string;
   action: 'INSERT' | 'UPDATE' | 'DELETE';
   user_id: string | null;
-  user_role: string | null;
   old_data: Record<string, unknown> | null;
   new_data: Record<string, unknown> | null;
   created_at: string;
@@ -52,7 +51,6 @@ export class PgAuditLogRepository implements IAuditLogRepository {
       recordId: row.record_id,
       action: row.action,
       userId: row.user_id,
-      userRole: row.user_role,
       oldData: row.old_data,
       newData: row.new_data,
       createdAt: row.created_at,

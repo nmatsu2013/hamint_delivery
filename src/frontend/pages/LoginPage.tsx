@@ -1,32 +1,21 @@
-import { useState } from 'react';
+import { type FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ApiError, api } from '../lib/apiClient';
+import { api } from '../lib/apiClient';
 import { useAuthStore } from '../store/authStore';
-import type { Actor, Role } from '../types/api';
+import type { Actor } from '../types/api';
 import { ErrorAlert } from '../components/elements/StateViews';
-
-const ROLES: Array<{ role: Role; label: string; description: string }> = [
-  { role: 'sales', label: '営業', description: '受注の登録・閲覧' },
-  { role: 'purchasing', label: '購買', description: '発注・輸入・国際輸送' },
-  { role: 'warehouse', label: '倉庫', description: '入庫・ロット・国内出荷' },
-  { role: 'accounting', label: '経理', description: '請求・入金・金額確認' },
-  { role: 'admin', label: '管理者', description: 'すべての操作・監査ログ' },
-];
-
-const DEV_AUTH = import.meta.env.VITE_DEV_AUTH
-  ? import.meta.env.VITE_DEV_AUTH !== 'false'
-  : import.meta.env.DEV;
 
 export function LoginPage() {
   const navigate = useNavigate();
   const token = useAuthStore((state) => state.token);
   const actor = useAuthStore((state) => state.actor);
   const setSession = useAuthStore((state) => state.setSession);
-  const setActor = useAuthStore((state) => state.setActor);
   const logout = useAuthStore((state) => state.logout);
+  const [userId, setUserId] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<unknown>(null);
   const [busy, setBusy] = useState(false);
-  const [manualToken, setManualToken] = useState('');
 
   if (token) {
     return (
@@ -34,21 +23,12 @@ export function LoginPage() {
         <div className="login-card">
           <div className="eyebrow">HAMINT DELIVERY</div>
           <h1 className="login-title">ログイン済みです</h1>
-          <p className="login-subtitle">
-            {actor ? `${actor.name ?? actor.email}（${actor.roleLabel}）` : 'セッションが有効です'}
-          </p>
+          <p className="login-subtitle">{actor?.name ?? actor?.userId ?? 'セッションが有効です'}</p>
           <div className="btn-row">
             <Link className="btn btn-primary" to="/orders">
               受注一覧へ
             </Link>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => {
-                logout();
-                setError(null);
-              }}
-            >
+            <button type="button" className="btn btn-secondary" onClick={logout}>
               ログアウト
             </button>
           </div>
@@ -57,47 +37,20 @@ export function LoginPage() {
     );
   }
 
-  const loginByRole = async (role: Role) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setBusy(true);
     setError(null);
     try {
-      const result = await api.post<{
-        token: string;
-        actor: { email: string; role: Role; roleLabel: string };
-      }>('/auth/dev-login', { role }, null);
-      setSession(result.token, {
-        email: result.actor.email,
-        role: result.actor.role,
-        roleLabel: result.actor.roleLabel,
-        name: `${result.actor.roleLabel}担当`,
-      });
+      const result = await api.post<{ token: string; actor: Actor }>(
+        '/auth/login',
+        { userId, password },
+        null,
+      );
+      setSession(result.token, result.actor);
       navigate('/orders', { replace: true });
     } catch (caught) {
       setError(caught);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const loginByToken = async () => {
-    if (!manualToken.trim()) {
-      setError(new Error('トークンを入力してください'));
-      return;
-    }
-    setBusy(true);
-    setError(null);
-    try {
-      setSession(manualToken.trim(), null);
-      const me = await api.get<Actor>('/me');
-      setActor(me);
-      navigate('/orders', { replace: true });
-    } catch (caught) {
-      logout();
-      setError(
-        caught instanceof ApiError
-          ? caught
-          : new Error('トークンを検証できませんでした'),
-      );
     } finally {
       setBusy(false);
     }
@@ -109,64 +62,54 @@ export function LoginPage() {
         <div>
           <div className="eyebrow">HAMINT DELIVERY</div>
           <h1 className="login-title">受発注管理</h1>
-          <p className="login-subtitle">
-            医療製品の受注から入金までを一元管理します。
-          </p>
+          <p className="login-subtitle">ユーザーIDとパスワードを入力してください。</p>
         </div>
 
-        {DEV_AUTH ? (
-          <div className="stack">
-            <div className="section-title" style={{ fontSize: 18 }}>
-              開発用ログイン（ロールを選択）
-            </div>
-            <div className="role-grid">
-              {ROLES.map((item) => (
-                <button
-                  key={item.role}
-                  type="button"
-                  className="role-button"
-                  disabled={busy}
-                  onClick={() => void loginByRole(item.role)}
-                >
-                  {item.label}
-                  <span>{item.description}</span>
-                </button>
-              ))}
-            </div>
-            <p className="field-hint">
-              本番環境では Supabase Auth の JWT を利用し、この開発用ログインは無効化します。
-            </p>
-          </div>
-        ) : null}
-
-        <div className="stack">
-          <div className="section-title" style={{ fontSize: 18 }}>
-            {DEV_AUTH ? 'または JWT でログイン' : 'JWT でログイン'}
-          </div>
+        <form className="stack" onSubmit={(event) => void submit(event)}>
           <div className="field">
-            <label htmlFor="jwt">Supabase アクセストークン</label>
-            <textarea
-              id="jwt"
-              value={manualToken}
-              onChange={(event) => setManualToken(event.target.value)}
-              placeholder="eyJhbGciOi..."
-              style={{ minHeight: 72 }}
+            <label htmlFor="userId">ユーザーID</label>
+            <input
+              id="userId"
+              name="userId"
+              type="text"
+              autoComplete="username"
+              value={userId}
+              onChange={(event) => setUserId(event.target.value)}
+              autoFocus
+              required
             />
           </div>
+          <div className="field">
+            <label htmlFor="password">パスワード</label>
+            <div className="password-input-wrap">
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((current) => !current)}
+                aria-label={showPassword ? 'パスワードを隠す' : 'パスワードを表示'}
+                aria-pressed={showPassword}
+              >
+                {showPassword ? '隠す' : '表示'}
+              </button>
+            </div>
+          </div>
           <button
-            type="button"
+            type="submit"
             className="btn btn-primary"
-            disabled={busy || !manualToken.trim()}
-            onClick={() => void loginByToken()}
+            disabled={busy || !userId || !password}
           >
-            {busy ? '確認中…' : 'ログイン'}
+            {busy ? 'ログイン中…' : 'ログイン'}
           </button>
-          {DEV_AUTH ? (
-            <p className="field-hint">
-              APIサーバーが起動していれば、上のロールボタンだけでログインできます。
-            </p>
-          ) : null}
-        </div>
+        </form>
 
         {error ? <ErrorAlert error={error} /> : null}
       </div>

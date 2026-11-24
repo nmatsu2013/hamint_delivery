@@ -27,7 +27,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'hamint-auth',
+      name: 'hamint-auth-v2',
       partialize: (state) => ({ token: state.token, actor: state.actor }),
     },
   ),

@@ -1,4 +1,4 @@
-import type { LotEntity, LotMovementEntity, TraceabilityRowEntity } from '../entities/lot.entity';
+import type { LotEntity, LotMovementEntity, TraceabilityRowEntity } from '../entities/lot.entity.js';
 
 export interface ILotRepository {
   findById(id: string): Promise<LotEntity | null>;

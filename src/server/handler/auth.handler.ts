@@ -1,15 +1,28 @@
 import { Hono } from 'hono';
+import { createHash, timingSafeEqual } from 'node:crypto';
+import { SignJWT } from 'jose';
 import { z } from 'zod';
-import type { Env } from '../config/env';
-import { isRole, ROLE_LABEL } from '../domain/entities/actor.entity';
-import type { AppEnv } from './app-env';
-import { parseJson } from './validation';
-import { ValidationError } from '../domain/errors/domain.error';
+import type { Env } from '../config/env.js';
+import type { AppEnv } from './app-env.js';
+import { parseJson } from './validation.js';
+import { UnauthorizedError } from '../domain/errors/domain.error.js';
 
-const DevLoginSchema = z.object({
-  role: z.enum(['sales', 'purchasing', 'warehouse', 'accounting', 'admin']),
-  email: z.string().email().optional(),
+const LoginSchema = z.object({
+  userId: z.string().min(1),
+  password: z.string().min(1),
 });
+
+export const SIMPLE_USER_UUID = '55555555-5555-4555-8555-555555555555';
+
+export function authSecret(password: string): Uint8Array {
+  return createHash('sha256').update(password).digest();
+}
+
+function matches(actual: string, expected: string): boolean {
+  const actualHash = createHash('sha256').update(actual).digest();
+  const expectedHash = createHash('sha256').update(expected).digest();
+  return timingSafeEqual(actualHash, expectedHash);
+}
 
 export function createAuthRoutes(): Hono<AppEnv> {
   const routes = new Hono<AppEnv>();
@@ -18,35 +31,39 @@ export function createAuthRoutes(): Hono<AppEnv> {
     const actor = c.get('actor');
     return c.json({
       id: actor.id,
-      email: actor.email,
-      role: actor.role,
-      roleLabel: ROLE_LABEL[actor.role],
-      name: actor.name ?? actor.email,
+      userId: actor.userId,
+      name: actor.name ?? actor.userId,
     });
   });
 
   return routes;
 }
 
-/** 認証不要の開発用ログイン。ALLOW_DEV_AUTH=true のときだけ有効。 */
-export function createDevLoginRoute(env: Env): Hono<AppEnv> {
+/** 固定ユーザーID・パスワードを検証する簡易ログイン。 */
+export function createLoginRoute(env: Env): Hono<AppEnv> {
   const routes = new Hono<AppEnv>();
 
-  routes.post('/dev-login', async (c) => {
-    if (!env.ALLOW_DEV_AUTH) {
-      throw new ValidationError('開発用ログインは無効です');
+  routes.post('/login', async (c) => {
+    const body = await parseJson(c, LoginSchema);
+    if (!matches(body.userId, env.LOGIN_USER_ID) || !matches(body.password, env.LOGIN_PASSWORD)) {
+      throw new UnauthorizedError('ユーザーIDまたはパスワードが正しくありません');
     }
-    const body = await parseJson(c, DevLoginSchema);
-    if (!isRole(body.role)) {
-      throw new ValidationError('ロールが不正です');
-    }
-    const email = body.email ?? `${body.role}@example.com`;
+
+    const token = await new SignJWT({ userId: env.LOGIN_USER_ID })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setSubject(SIMPLE_USER_UUID)
+      .setIssuer('hamint-delivery')
+      .setAudience('hamint-app')
+      .setIssuedAt()
+      .setExpirationTime('12h')
+      .sign(authSecret(env.LOGIN_PASSWORD));
+
     return c.json({
-      token: `dev:${body.role}:${email}`,
+      token,
       actor: {
-        email,
-        role: body.role,
-        roleLabel: ROLE_LABEL[body.role],
+        id: SIMPLE_USER_UUID,
+        userId: env.LOGIN_USER_ID,
+        name: env.LOGIN_USER_ID,
       },
     });
   });

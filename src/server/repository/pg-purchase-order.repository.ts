@@ -2,15 +2,15 @@ import type {
   PurchaseOrderEntity,
   PurchaseOrderLineEntity,
   PurchaseOrderSummaryEntity,
-} from '../domain/entities/purchase-order.entity';
-import { normalizePurchaseOrderStatus } from '../domain/entities/status-mapper';
-import type { PurchaseOrderStatus } from '../domain/entities/status';
+} from '../domain/entities/purchase-order.entity.js';
+import { normalizePurchaseOrderStatus } from '../domain/entities/status-mapper.js';
+import type { PurchaseOrderStatus } from '../domain/entities/status.js';
 import type {
   IPurchaseOrderRepository,
   PurchaseOrderListParams,
   ReceiveUpdateData,
-} from '../domain/repositories/purchase-order.repository.interface';
-import { toNullableNumber, toNullableString, toNumber, type Queryable } from './database';
+} from '../domain/repositories/purchase-order.repository.interface.js';
+import { toNullableNumber, toNullableString, toNumber, type Queryable } from './database.js';
 
 interface PoRow {
   id: string;

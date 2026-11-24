@@ -3,7 +3,6 @@ import type { DashboardKpis } from '../../../types/api';
 
 export function KpiCards({ kpis }: { kpis: DashboardKpis }) {
   const cards = [
-    { label: '本日の受注', value: kpis.todayOrdersCount, color: DESIGN_TOKENS.kpiColors.today },
     {
       label: '発注待ち（受付）',
       value: kpis.pendingOrdersCount,
@@ -15,16 +14,19 @@ export function KpiCards({ kpis }: { kpis: DashboardKpis }) {
       color: DESIGN_TOKENS.kpiColors.inTransit,
     },
     { label: '未入金', value: kpis.unpaidInvoicesCount, color: DESIGN_TOKENS.kpiColors.unpaid },
+    {
+      label: '今月の受注',
+      value: kpis.currentMonthOrdersCount,
+      color: DESIGN_TOKENS.kpiColors.today,
+    },
   ];
   return (
-    <div className="kpi-grid">
+    <div className="summary-chips">
       {cards.map((card) => (
-        <div key={card.label} className="kpi-card" style={{ borderTopColor: card.color }}>
-          <div className="kpi-label">{card.label}</div>
-          <div>
-            <span className="kpi-value">{card.value}</span>
-            <span className="kpi-unit">件</span>
-          </div>
+        <div key={card.label} className="summary-chip" style={{ borderLeftColor: card.color }}>
+          <span className="summary-label">{card.label}</span>
+          <span className="summary-value">{card.value}</span>
+          <span className="summary-unit">件</span>
         </div>
       ))}
     </div>

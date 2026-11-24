@@ -1,4 +1,4 @@
-import type { PurchaseOrderStatus } from './status';
+import type { PurchaseOrderStatus } from './status.js';
 
 export interface PurchaseOrderLineEntity {
   id: string;
@@ -79,5 +79,5 @@ export interface InspectAndReceiveResult {
   purchaseOrderLineId: string;
   productId: string;
   orderLineStatus: string;
-  lot: import('./lot.entity').LotEntity | null;
+  lot: import('./lot.entity.js').LotEntity | null;
 }

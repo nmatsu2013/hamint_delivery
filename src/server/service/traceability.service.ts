@@ -1,6 +1,6 @@
-import { ValidationError } from '../domain/errors/domain.error';
-import type { TraceabilityRowEntity } from '../domain/entities/lot.entity';
-import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface';
+import { ValidationError } from '../domain/errors/domain.error.js';
+import type { TraceabilityRowEntity } from '../domain/entities/lot.entity.js';
+import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface.js';
 
 /** UC-08: ロット追跡・回収検索 */
 export class TraceabilityService {

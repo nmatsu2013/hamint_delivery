@@ -4,7 +4,6 @@ export interface AuditLogEntity {
   recordId: string;
   action: 'INSERT' | 'UPDATE' | 'DELETE';
   userId: string | null;
-  userRole: string | null;
   oldData: Record<string, unknown> | null;
   newData: Record<string, unknown> | null;
   createdAt: string;

@@ -2,19 +2,19 @@ import { randomUUID } from 'node:crypto';
 import {
   BusinessRuleViolationError,
   ValidationError,
-} from '../domain/errors/domain.error';
-import type { Actor } from '../domain/entities/actor.entity';
+} from '../domain/errors/domain.error.js';
+import type { Actor } from '../domain/entities/actor.entity.js';
 import type {
   CreatePurchaseOrderInput,
   PurchaseOrderEntity,
   PurchaseOrderLineEntity,
-} from '../domain/entities/purchase-order.entity';
-import { SALES_ORDER_LINE_STATUS, PURCHASE_ORDER_STATUS } from '../domain/entities/status';
-import { normalizePurchaseOrderStatus } from '../domain/entities/status-mapper';
-import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface';
-import { clampPageSize, parseOffset } from '../config/constants';
-import { isValidDateString, todayAsUtcDate, todayInTokyo } from '../config/date';
-import { ensureFound, syncSalesOrderStatus } from './service-support';
+} from '../domain/entities/purchase-order.entity.js';
+import { SALES_ORDER_LINE_STATUS, PURCHASE_ORDER_STATUS } from '../domain/entities/status.js';
+import { normalizePurchaseOrderStatus } from '../domain/entities/status-mapper.js';
+import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface.js';
+import { clampPageSize, parseOffset } from '../config/constants.js';
+import { isValidDateString, todayAsUtcDate, todayInTokyo } from '../config/date.js';
+import { ensureFound, syncSalesOrderStatus } from './service-support.js';
 
 export interface PurchaseOrderListQuery {
   status?: string;

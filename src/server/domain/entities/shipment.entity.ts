@@ -1,4 +1,4 @@
-import type { ShipmentDirection, ShipmentStatus } from './status';
+import type { ShipmentDirection, ShipmentStatus } from './status.js';
 
 export interface ShipmentLineEntity {
   id: string;

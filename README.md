@@ -8,15 +8,15 @@
 
 | 領域 | 内容 |
 |---|---|
-| DB | `migration/create.sql`（21テーブル）＋ `0002_spec_detail.sql`（`audit_logs`、製品拡張列、監査トリガー）、シード |
-| Server | domain / repository / service / handler のクリーンアーキテクチャ。UC-01〜UC-08、RBAC、マスキング、監査ログ |
-| Frontend | 受注一覧（デザイン準拠）・受注明細（8段階ステッパー）・新規受注・発注・輸入申請・入庫検品/ロット・出荷配送・請求入金・ロット追跡・マスタ参照 |
-| テスト | Vitest 単体テスト24件、APIによる受入シナリオ検証（AT-01〜AT-28） |
+| DB | `migration/create.sql`（21テーブル）＋ `0002_spec_detail.sql`（`audit_logs`、製品拡張列、監査トリガー）＋ `0003_harden_audit_logs.sql`＋`0004_remove_roles.sql`、シード |
+| Server | domain / repository / service / handler のクリーンアーキテクチャ。UC-01〜UC-08、簡易認証、監査ログ |
+| Frontend | 受注一覧（`spec/design_sample` 準拠：件数チップ・進み具合・コンパクト表示）・受注明細（8段階ステッパー）・新規受注・発注・輸入申請・入庫検品/ロット・出荷配送・請求入金・ロット追跡・マスタ参照 |
+| テスト | Vitest 単体テスト23件 |
 
 ## 技術スタック
 
 - TypeScript 5（strict）
-- Server: Hono + `@hono/node-server`、Zod、`pg`、`jose`（Supabase JWT検証）
+- Server: Hono + `@hono/node-server`、Zod、`pg`、`jose`（簡易ログイン用JWT）
 - Frontend: React 18 + Vite、React Router v6、TanStack Query、Zustand
 - DB: PostgreSQL（Supabase想定。ローカルDockerでも可）
 - Test: Vitest
@@ -29,7 +29,7 @@ src/
 │   ├── domain/        # エンティティ・状態Enum・リポジトリIF・ドメインエラー
 │   ├── repository/    # pgによる実装・トランザクション（UoW）
 │   ├── service/       # ユースケース（UC-01〜UC-08）
-│   ├── handler/       # Honoルート・Zod DTO・認証/RBAC/マスキング
+│   ├── handler/       # Honoルート・Zod DTO・認証
 │   ├── adapter/       # 外部サービス連携の置き場（現状は未使用）
 │   ├── config/        # 環境変数・業務日付・定数
 │   └── main.ts        # DI・サーバー起動
@@ -63,21 +63,20 @@ cp .env.example .env
 | `DATABASE_URL` | PostgreSQL接続文字列（必須） |
 | `PORT` | APIポート（既定 3000） |
 | `CORS_ORIGIN` | 許可オリジン（カンマ区切り、`*`可） |
-| `SUPABASE_URL` | SupabaseプロジェクトURL（JWKS検証） |
-| `SUPABASE_JWT_SECRET` | 旧来のHS256シークレット（任意） |
-| `ALLOW_DEV_AUTH` | `true` のとき `dev:<role>:<email>` を許可（本番は必ずfalse） |
+| `LOGIN_USER_ID` | 簡易ログインのユーザーID（既定 `hamint_user`） |
+| `LOGIN_PASSWORD` | 簡易ログインのパスワード（既定 `hamint_password`） |
 | `BUSINESS_DATE` | 受入テスト用に業務日付を固定（例 `2026-11-24`、通常は空） |
 | `VITE_API_BASE_URL` | フロントのAPIベース（既定 `/api`） |
-| `VITE_DEV_AUTH` | ログイン画面に開発用ロール選択を表示 |
 
 ### 3. DBマイグレーション・シード
 
 ```bash
-npm run db:migrate   # create.sql → 0002_spec_detail.sql の順に適用
-npm run db:seed      # products が空のときだけサンプルデータを投入
+npm run db:migrate            # migration/*.sql をファイル名順に適用
+npm run db:seed               # products が空のときだけサンプルデータを投入
+npm run db:seed -- --reset    # 既存サンプルデータを削除して30件シードを再投入
 ```
 
-`npm run db:seed` は `--force` を付けると再投入を試みます（一意制約に注意）。
+既存のサンプルデータを新しい30件シードに置き換える場合は `--reset` を利用してください。
 
 ローカルDockerで試す場合:
 
@@ -102,10 +101,9 @@ npm run dev
 
 ### 5. ログイン
 
-- 開発時: ログイン画面のロールボタン（営業／購買／倉庫／経理／管理者）でログイン
-  - `NODE_ENV` が `production` 以外の場合、`ALLOW_DEV_AUTH` 未設定でも開発用ログインは有効
-- 本番: Supabase Auth の `Authorization: Bearer <JWT>` を使用（`ALLOW_DEV_AUTH=false` を推奨）
-- JWTのロールは `app_metadata.role` → `user_metadata.role` → `role` の順で解決（未設定は `sales`）
+- ユーザーID: `hamint_user`
+- パスワード: `hamint_password`
+- ロール・権限分岐はありません。ログイン後はすべての画面と操作を利用できます。
 
 ## API概要
 
@@ -121,15 +119,15 @@ npm run dev
 | ロット | `GET /api/lots/available`, `GET /api/lots/trace?lotNo=...` |
 | 請求 | `GET/POST /api/invoices`, `GET /api/invoices/:id`, `POST /api/invoices/:id/payments`, `DELETE /api/invoices/:id`（確定済みは拒否） |
 | マスタ | `GET /api/customers`, `GET /api/customers/:id/addresses`, `GET /api/products`, `GET /api/prices/resolve` |
-| 監査 | `GET /api/audit-logs`（管理者のみ） |
-| 開発用 | `POST /api/auth/dev-login`（`ALLOW_DEV_AUTH=true` のみ） |
+| 監査 | `GET /api/audit-logs` |
+| ログイン | `POST /api/auth/login` |
 
 ## 受入テスト結果
 
-`BUSINESS_DATE=2026-11-24` のシードデータでAPIを実行し、以下を確認済みです。
+`BUSINESS_DATE=2026-11-25` のシードデータ（受注30件）でAPIを実行し、以下を確認済みです。
 
-- AT-01: 受注6件の数量・金額・状態
-- AT-02: KPI（本日2／受付2／輸入・輸送中1／未入金1）
+- AT-01: 受注30件の数量・金額・状態
+- AT-02: KPI（本日2／受付7／輸入・輸送中5／未入金5／今月30）
 - AT-03/04: 顧客別単価440、標準単価450
 - AT-05: 標準単価変更後も登録済み単価440は不変
 - AT-06: 受注明細から発注作成→受注が「発注済」
@@ -142,8 +140,7 @@ npm run dev
 - AT-21: 同一出荷の再送→`alreadyProcessed=true`、在庫減算1回のみ
 - AT-22: 受注数量超過の出荷→422
 - AT-23: 使用期限切れロットの出荷→422
-- AT-24/26: 権限外操作403、未認証401
-- AT-25: 営業・倉庫に仕入単価・関税・発注金額を返さない
+- AT-26: 未認証401
 - AT-27: 確定済み請求の削除→422
 - AT-28: `authenticated` ロールの `audit_logs` UPDATE/DELETE→permission denied
 
@@ -182,9 +179,10 @@ npm run db:seed
 
 ## 実装上の注意
 
+- **受注一覧の表示件数**: 画面はDBの実データを表示します。初期シードは30件です（受付7・発注済5・輸入/輸送中5・入荷済4・出荷済5・完了4）。`spec/design_sample/Main.dc.html` のレイアウト・色・列構成・進み具合表示に合わせています。
 - **業務日付**: 通常は Asia/Tokyo の今日。受入テスト・デモでは `BUSINESS_DATE` で固定できます。採番（`so`/`po`/`in`/`sh`/`inv`/`ia`）は伝票日付を基準にします。
-- **監査ログ**: 全業務テーブルに `AFTER INSERT/UPDATE/DELETE` トリガーを設定。操作者はトランザクション内の `app.user_id` / `app.user_role` から記録します。`audit_logs` は UPDATE/DELETE を REVOKE しています。
-- **RLS**: `create.sql` で全テーブルのRLSを有効化しています。Supabaseの `authenticated` / `anon` 向けポリシーは運用設計が必要なため未定義です（APIはサーバー側接続でRBACを強制）。`audit_logs` は改変拒否のみ実装済みです。
+- **監査ログ**: 全業務テーブルに `AFTER INSERT/UPDATE/DELETE` トリガーを設定。操作者はトランザクション内の `app.user_id` から記録します。`audit_logs` は UPDATE/DELETE を REVOKE しています。
+- **RLS**: `create.sql` で全テーブルのRLSを有効化しています。Supabaseの `authenticated` / `anon` 向けポリシーは運用設計が必要なため未定義です。`audit_logs` は改変拒否のみ実装済みです。
 - **部分入荷**: `purchase_order_lines` の検品項目は1組のみのため、1明細につき1回の検品登録です（仕様の要確認事項どおり）。
 - **消費税**: 10%固定・`floor` で計算。税区分・端数処理・請求書様式は要確認です。
 - **為替・原価配分**: 仕入価格はKRWのまま保存し、為替換算・関税等の品目配分は未実装（要確認）。

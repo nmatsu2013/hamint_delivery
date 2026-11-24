@@ -1,20 +1,41 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { PageHeader } from '../components/elements/PageHeader';
 import { ErrorAlert, LoadingState } from '../components/elements/StateViews';
 import { KpiCards } from '../features/salesOrders/components/KpiCards';
+import {
+  OrderFilterControl,
+  type OrderFilters,
+} from '../features/salesOrders/components/OrderFilterControl';
 import { SearchInput } from '../features/salesOrders/components/SearchInput';
-import { StatusFilterPills } from '../features/salesOrders/components/StatusFilterPills';
 import { SalesOrdersTable } from '../features/salesOrders/components/SalesOrdersTable';
 import { getDashboardKpis, getSalesOrders } from '../features/salesOrders/api/salesOrdersApi';
+import { currentDateString, formatDateWithWeekday } from '../lib/format';
 
 const PAGE_SIZE = 50;
+const EMPTY_FILTERS: OrderFilters = {
+  customer: '',
+  status: '',
+  orderDateFrom: '',
+  orderDateTo: '',
+  purchaseOrderDate: '',
+  arrivalDate: '',
+  receivedDate: '',
+};
 
 export function OrdersListPage() {
-  const [status, setStatus] = useState('');
+  const [filterInputs, setFilterInputs] = useState<OrderFilters>(EMPTY_FILTERS);
+  const [filters, setFilters] = useState<OrderFilters>(EMPTY_FILTERS);
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [offset, setOffset] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setFilters({ ...filterInputs, customer: filterInputs.customer.trim() });
+      setOffset(0);
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [filterInputs]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -24,20 +45,32 @@ export function OrdersListPage() {
     return () => window.clearTimeout(timer);
   }, [searchInput]);
 
-  useEffect(() => {
-    setOffset(0);
-  }, [status]);
-
   const kpiQuery = useQuery({ queryKey: ['dashboard-kpis'], queryFn: getDashboardKpis });
   const ordersQuery = useQuery({
-    queryKey: ['sales-orders', status, search, offset],
-    queryFn: () => getSalesOrders({ status: status || undefined, search: search || undefined, limit: PAGE_SIZE, offset }),
+    queryKey: ['sales-orders', filters, search, offset],
+    queryFn: () =>
+      getSalesOrders({
+        ...filters,
+        search: search || undefined,
+        limit: PAGE_SIZE,
+        offset,
+      }),
   });
 
   const total = ordersQuery.data?.total ?? 0;
   const items = ordersQuery.data?.items ?? [];
   const page = Math.floor(offset / PAGE_SIZE) + 1;
   const totalPages = Math.max(Math.ceil(total / PAGE_SIZE), 1);
+  const kpis = kpiQuery.data ?? {
+    todayOrdersCount: 0,
+    pendingOrdersCount: 0,
+    inTransitOrdersCount: 0,
+    unpaidInvoicesCount: 0,
+    currentMonthOrdersCount: 0,
+    totalOrdersCount: total,
+    statusCounts: {},
+    businessDate: currentDateString(),
+  };
 
   const exportCsv = () => {
     const header = [
@@ -79,58 +112,68 @@ export function OrdersListPage() {
   };
 
   return (
-    <main className="page">
-      <PageHeader
-        eyebrow="SALES ORDERS"
-        title="受注管理 一覧"
-        description="注文から発注・輸入・出荷・入金までの進み具合を、受注ごとに確認します。"
-      />
+    <main className="page orders-page">
+      <div className="orders-page-header">
+        <div>
+          <h1 className="orders-title">受注管理 一覧</h1>
+          <p className="orders-description">
+            受注から発注・輸入・出荷・入金までの進み具合を確認します（サンプルデータ）　表示日：
+            {formatDateWithWeekday(kpis.businessDate)}
+          </p>
+        </div>
+        <KpiCards kpis={kpis} />
+      </div>
 
       {kpiQuery.isError ? <ErrorAlert error={kpiQuery.error} /> : null}
-      {kpiQuery.data ? <KpiCards kpis={kpiQuery.data} /> : null}
 
-      <section className="card">
-        <div className="card-header">
-          <div>
-            <h2 className="card-title">受注一覧</h2>
-            <p className="card-subtitle">行を選ぶと受注明細が開きます</p>
-          </div>
-          <div className="btn-row">
-            <button type="button" className="btn btn-secondary btn-sm" onClick={exportCsv}>
+      <section className="orders-panel">
+        <div className="orders-toolbar">
+          <OrderFilterControl
+            values={filterInputs}
+            onChange={(field, value) => {
+              setFilterInputs((current) => ({ ...current, [field]: value }));
+            }}
+            onClear={() => {
+              setFilterInputs(EMPTY_FILTERS);
+              setFilters(EMPTY_FILTERS);
+              setOffset(0);
+            }}
+          />
+          <div className="orders-tools">
+            <SearchInput value={searchInput} onChange={setSearchInput} />
+            <button type="button" className="btn-csv" onClick={exportCsv}>
               CSV出力
             </button>
-            <StatusFilterPills value={status} onChange={setStatus} />
-            <SearchInput value={searchInput} onChange={setSearchInput} />
           </div>
         </div>
 
         {ordersQuery.isLoading ? <LoadingState /> : null}
         {ordersQuery.isError ? (
-          <div className="card-pad">
+          <div className="orders-error">
             <ErrorAlert error={ordersQuery.error} />
           </div>
         ) : null}
         {ordersQuery.data ? <SalesOrdersTable items={items} /> : null}
 
-        <div className="table-footer">
+        <div className="orders-footer">
           <span>
             {items.length}件を表示中（全{total}件）
           </span>
-          <div className="btn-row">
+          <div className="pager">
             <button
               type="button"
-              className="btn btn-secondary btn-sm"
               disabled={offset === 0}
               onClick={() => setOffset(Math.max(offset - PAGE_SIZE, 0))}
             >
               前へ
             </button>
+            <span>｜</span>
             <span>
               {page} / {totalPages}
             </span>
+            <span>｜</span>
             <button
               type="button"
-              className="btn btn-secondary btn-sm"
               disabled={offset + PAGE_SIZE >= total}
               onClick={() => setOffset(offset + PAGE_SIZE)}
             >

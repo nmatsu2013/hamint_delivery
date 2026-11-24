@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { PageHeader } from '../components/elements/PageHeader';
 import { StatusPill } from '../components/elements/StatusPill';
@@ -11,18 +11,15 @@ import {
 } from '../features/imports/api/importsApi';
 import { getPurchaseOrders } from '../features/purchaseOrders/api/purchaseOrdersApi';
 import { getSalesOrderDetail } from '../features/salesOrders/api/salesOrdersApi';
-import { useAuthStore } from '../store/authStore';
 import { formatDate } from '../lib/format';
 import type { ImportApplication } from '../types/api';
 
 const STATUS_OPTIONS = ['書類準備中', '申請済', '確認中', '承認', '差戻し'];
 
 export function ImportsPage() {
-  const role = useAuthStore((state) => state.actor?.role);
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get('orderId') ?? '';
-  const canEdit = role === 'purchasing' || role === 'admin';
 
   const [selectedApplication, setSelectedApplication] = useState<ImportApplication | null>(null);
   const [poId, setPoId] = useState('');
@@ -112,13 +109,17 @@ export function ImportsPage() {
         title="輸入申請・通関"
         description="発注ごとの輸入申請、必要書類、通関許可の記録を管理します。"
         showDate={false}
+        actions={
+          <Link to="/shipments" className="btn btn-secondary btn-sm">
+            国際輸送を登録
+          </Link>
+        }
       />
 
       {message ? <SuccessAlert message={message} /> : null}
       {error ? <ErrorAlert error={error} /> : null}
 
-      {canEdit ? (
-        <section className="card card-pad">
+      <section className="card card-pad">
           <h2 className="section-title">輸入申請を登録</h2>
           <div className="form-grid">
             <div className="field span-2">
@@ -192,8 +193,7 @@ export function ImportsPage() {
               {createMutation.isPending ? '登録中…' : '輸入申請を登録'}
             </button>
           </div>
-        </section>
-      ) : null}
+      </section>
 
       <section className="card">
         <div className="card-header">
@@ -339,7 +339,7 @@ export function ImportsPage() {
             <button
               type="button"
               className="btn btn-primary"
-              disabled={!canEdit || updateMutation.isPending}
+              disabled={updateMutation.isPending}
               onClick={() => {
                 resetMessages();
                 updateMutation.mutate(selectedApplication);

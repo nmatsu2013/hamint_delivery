@@ -1,9 +1,9 @@
 import type {
   CustomerAddressEntity,
   CustomerEntity,
-} from '../domain/entities/customer.entity';
-import type { ICustomerRepository } from '../domain/repositories/customer.repository.interface';
-import { type Queryable } from './database';
+} from '../domain/entities/customer.entity.js';
+import type { ICustomerRepository } from '../domain/repositories/customer.repository.interface.js';
+import { type Queryable } from './database.js';
 
 interface CustomerRow {
   id: string;

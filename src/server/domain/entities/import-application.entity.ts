@@ -1,4 +1,4 @@
-import type { ImportApplicationStatus } from './status';
+import type { ImportApplicationStatus } from './status.js';
 
 export interface ImportDocumentEntity {
   id: string;

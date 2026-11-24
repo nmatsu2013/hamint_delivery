@@ -1,6 +1,6 @@
 import { Pool, types as pgTypes } from 'pg';
 import type { PoolClient, QueryResult, QueryResultRow } from 'pg';
-import { createPgConfig } from '../config/pg';
+import { createPgConfig } from '../config/pg.js';
 
 // date / timestamp はタイムゾーン変換をせず文字列のまま扱う（YYYY-MM-DD / ISO 文字列）。
 pgTypes.setTypeParser(1082, (value: string) => value);

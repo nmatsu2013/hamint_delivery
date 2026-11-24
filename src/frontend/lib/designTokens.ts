@@ -16,7 +16,7 @@ export const DESIGN_TOKENS = {
     受付: { bg: '#EAF0F5', fg: '#3F5068' },
     発注済: { bg: '#DDF0E8', fg: '#1F6B57' },
     '輸入・輸送中': { bg: '#FFEFC7', fg: '#6E4700' },
-    入荷済: { bg: '#E6F2EE', fg: '#1F6B57' },
+    入荷済: { bg: '#E4E3F7', fg: '#413A8C' },
     出荷済: { bg: '#DDEBFA', fg: '#1F4E86' },
     完了: { bg: '#E3E8EE', fg: '#3F5068' },
     取消: { bg: '#FDE8E8', fg: '#9B1C1C' },
@@ -51,6 +51,26 @@ export const DESIGN_TOKENS = {
     '未入金（請求済）': '#9A2B1F',
     入金済: '#14633A',
   } as Record<string, string>,
+  progressStepColors: [
+    '#16A34A', // 1: 受注 (緑)
+    '#65A30D', // 2: 発注 (黄緑)
+    '#84CC16', // 3: 輸入申請 (黄緑〜黄)
+    '#EAB308', // 4: 輸送・通関 (黄色)
+    '#F59E0B', // 5: 入庫・検品 (山吹色 / 黄橙)
+    '#EA580C', // 6: 出荷 (オレンジ)
+    '#F43F5E', // 7: 納品 (コーラルピンク)
+    '#EC4899', // 8: 入金 (ピンク)
+  ],
+  progressStepTextColors: [
+    '#16A34A', // 1: 緑
+    '#65A30D', // 2: 黄緑
+    '#4D7C0F', // 3: 黄緑
+    '#B45309', // 4: 黄色 (テキスト視認性確保)
+    '#C2410C', // 5: 山吹色
+    '#EA580C', // 6: オレンジ
+    '#E11D48', // 7: コーラルピンク
+    '#DB2777', // 8: ピンク
+  ],
 };
 
 export function statusPillStyle(status: string): { backgroundColor: string; color: string } {

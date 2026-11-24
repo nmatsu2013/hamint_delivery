@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
-import type { AppEnv } from './app-env';
-import type { Services } from '../service/services';
+import type { AppEnv } from './app-env.js';
+import type { Services } from '../service/services.js';
 
 export function createDashboardRoutes(services: Services): Hono<AppEnv> {
   const routes = new Hono<AppEnv>();

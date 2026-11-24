@@ -3,7 +3,7 @@ import type {
   InvoiceLineEntity,
   InvoiceSummaryEntity,
   PaymentEntity,
-} from '../entities/invoice.entity';
+} from '../entities/invoice.entity.js';
 
 export interface InvoiceListParams {
   status?: string;

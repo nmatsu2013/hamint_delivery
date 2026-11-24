@@ -2,8 +2,8 @@ import type {
   ShipmentEntity,
   ShipmentLineEntity,
   ShipmentSummaryEntity,
-} from '../entities/shipment.entity';
-import type { ShipmentDirection } from '../entities/status';
+} from '../entities/shipment.entity.js';
+import type { ShipmentDirection } from '../entities/status.js';
 
 export interface ShipmentListParams {
   direction?: ShipmentDirection;

@@ -1,10 +1,10 @@
-import type { Actor } from '../domain/entities/actor.entity';
+import type { Actor } from '../domain/entities/actor.entity.js';
 import type {
   IUnitOfWork,
   RepositoryContext,
-} from '../domain/repositories/unit-of-work.interface';
-import { PgDatabase } from './database';
-import { createRepositories } from './repositories';
+} from '../domain/repositories/unit-of-work.interface.js';
+import { PgDatabase } from './database.js';
+import { createRepositories } from './repositories.js';
 
 export class PgUnitOfWork implements IUnitOfWork {
   readonly repos: RepositoryContext;
@@ -22,11 +22,7 @@ export class PgUnitOfWork implements IUnitOfWork {
       await client.query('BEGIN');
       if (actor) {
         // 監査トリガーが参照する操作者情報。トランザクション内だけ有効。
-        await client.query(
-          `select set_config('app.user_id', $1, true),
-                  set_config('app.user_role', $2, true)`,
-          [actor.id, actor.role],
-        );
+        await client.query(`select set_config('app.user_id', $1, true)`, [actor.id]);
       }
       const repos = createRepositories(client);
       const result = await work(repos);

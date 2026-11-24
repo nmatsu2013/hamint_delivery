@@ -2,8 +2,8 @@ import { randomUUID } from 'node:crypto';
 import {
   BusinessRuleViolationError,
   ValidationError,
-} from '../domain/errors/domain.error';
-import type { Actor } from '../domain/entities/actor.entity';
+} from '../domain/errors/domain.error.js';
+import type { Actor } from '../domain/entities/actor.entity.js';
 import type {
   CreateInvoiceInput,
   InvoiceEntity,
@@ -11,16 +11,16 @@ import type {
   PaymentEntity,
   RecordPaymentInput,
   RecordPaymentResult,
-} from '../domain/entities/invoice.entity';
+} from '../domain/entities/invoice.entity.js';
 import {
   INVOICE_STATUS,
   SALES_ORDER_LINE_STATUS,
-} from '../domain/entities/status';
-import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface';
-import { normalizeInvoiceStatus } from '../domain/entities/status-mapper';
-import { CONSUMPTION_TAX_RATE, clampPageSize, parseOffset } from '../config/constants';
-import { addDays, dateStringToUtcDate, isValidDateString, todayInTokyo } from '../config/date';
-import { ensureFound } from './service-support';
+} from '../domain/entities/status.js';
+import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface.js';
+import { normalizeInvoiceStatus } from '../domain/entities/status-mapper.js';
+import { CONSUMPTION_TAX_RATE, clampPageSize, parseOffset } from '../config/constants.js';
+import { addDays, dateStringToUtcDate, isValidDateString, todayInTokyo } from '../config/date.js';
+import { ensureFound } from './service-support.js';
 
 export interface InvoiceListQuery {
   status?: string;

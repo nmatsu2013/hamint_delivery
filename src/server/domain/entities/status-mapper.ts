@@ -1,4 +1,4 @@
-import { ValidationError } from '../errors/domain.error';
+import { ValidationError } from '../errors/domain.error.js';
 import type {
   ImportApplicationStatus,
   InvoiceStatus,
@@ -9,8 +9,8 @@ import type {
   SalesOrderStatus,
   ShipmentDirection,
   ShipmentStatus,
-} from './status';
-import { SALES_ORDER_LINE_STATUS } from './status';
+} from './status.js';
+import { SALES_ORDER_LINE_STATUS } from './status.js';
 
 function normalizeValue<T extends string>(
   value: string,

@@ -18,8 +18,7 @@ import type {
 
 const actor: Actor = {
   id: '33333333-3333-4333-8333-333333333333',
-  email: 'warehouse@example.com',
-  role: 'warehouse',
+  userId: 'hamint_user',
 };
 
 function makeLine(overrides: Partial<SalesOrderLineEntity> = {}): SalesOrderLineEntity {

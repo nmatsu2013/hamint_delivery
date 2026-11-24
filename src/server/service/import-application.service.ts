@@ -2,19 +2,19 @@ import { randomUUID } from 'node:crypto';
 import {
   BusinessRuleViolationError,
   ValidationError,
-} from '../domain/errors/domain.error';
-import type { Actor } from '../domain/entities/actor.entity';
+} from '../domain/errors/domain.error.js';
+import type { Actor } from '../domain/entities/actor.entity.js';
 import type {
   CreateImportApplicationInput,
   ImportApplicationEntity,
   UpdateImportApplicationStatusInput,
-} from '../domain/entities/import-application.entity';
-import { IMPORT_APPLICATION_STATUS } from '../domain/entities/status';
-import { normalizeImportApplicationStatus } from '../domain/entities/status-mapper';
-import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface';
-import { clampPageSize, parseOffset } from '../config/constants';
-import { dateStringToUtcDate, isValidDateString, todayInTokyo } from '../config/date';
-import { ensureFound } from './service-support';
+} from '../domain/entities/import-application.entity.js';
+import { IMPORT_APPLICATION_STATUS } from '../domain/entities/status.js';
+import { normalizeImportApplicationStatus } from '../domain/entities/status-mapper.js';
+import type { IUnitOfWork } from '../domain/repositories/unit-of-work.interface.js';
+import { clampPageSize, parseOffset } from '../config/constants.js';
+import { dateStringToUtcDate, isValidDateString, todayInTokyo } from '../config/date.js';
+import { ensureFound } from './service-support.js';
 
 export interface ImportApplicationListQuery {
   status?: string;

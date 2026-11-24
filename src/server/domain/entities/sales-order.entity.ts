@@ -1,4 +1,4 @@
-import type { SalesOrderLineStatus, SalesOrderStatus } from './status';
+import type { SalesOrderLineStatus, SalesOrderStatus } from './status.js';
 
 export type PaymentStatusLabel = '未請求' | '未入金（請求済）' | '入金済';
 

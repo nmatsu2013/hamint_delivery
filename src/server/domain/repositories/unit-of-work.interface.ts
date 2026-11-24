@@ -1,14 +1,14 @@
-import type { Actor } from '../entities/actor.entity';
-import type { IAuditLogRepository } from './audit-log.repository.interface';
-import type { ICustomerRepository } from './customer.repository.interface';
-import type { IImportApplicationRepository } from './import-application.repository.interface';
-import type { IInvoiceRepository } from './invoice.repository.interface';
-import type { ILotRepository } from './lot.repository.interface';
-import type { IPriceRepository } from './price.repository.interface';
-import type { IProductRepository } from './product.repository.interface';
-import type { IPurchaseOrderRepository } from './purchase-order.repository.interface';
-import type { ISalesOrderRepository } from './sales-order.repository.interface';
-import type { IShipmentRepository } from './shipment.repository.interface';
+import type { Actor } from '../entities/actor.entity.js';
+import type { IAuditLogRepository } from './audit-log.repository.interface.js';
+import type { ICustomerRepository } from './customer.repository.interface.js';
+import type { IImportApplicationRepository } from './import-application.repository.interface.js';
+import type { IInvoiceRepository } from './invoice.repository.interface.js';
+import type { ILotRepository } from './lot.repository.interface.js';
+import type { IPriceRepository } from './price.repository.interface.js';
+import type { IProductRepository } from './product.repository.interface.js';
+import type { IPurchaseOrderRepository } from './purchase-order.repository.interface.js';
+import type { ISalesOrderRepository } from './sales-order.repository.interface.js';
+import type { IShipmentRepository } from './shipment.repository.interface.js';
 
 export interface RepositoryContext {
   salesOrders: ISalesOrderRepository;

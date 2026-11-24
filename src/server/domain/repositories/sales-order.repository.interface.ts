@@ -2,10 +2,16 @@ import type {
   SalesOrderEntity,
   SalesOrderLineEntity,
   SalesOrderSummaryEntity,
-} from '../entities/sales-order.entity';
+} from '../entities/sales-order.entity.js';
 
 export interface SalesOrderListParams {
+  customer?: string;
   status?: string;
+  orderDateFrom?: string;
+  orderDateTo?: string;
+  purchaseOrderDate?: string;
+  arrivalDate?: string;
+  receivedDate?: string;
   search?: string;
   limit: number;
   offset: number;
@@ -25,4 +31,8 @@ export interface ISalesOrderRepository {
   cancel(id: string, actorId?: string): Promise<void>;
   countByOrderDate(date: string): Promise<number>;
   countByStatus(status: string): Promise<number>;
+  /** ステータス別件数（ダッシュボード集計用）。 */
+  countByStatuses(): Promise<Record<string, number>>;
+  /** 指定月（YYYY-MM）の受注件数。 */
+  countByOrderMonth(month: string): Promise<number>;
 }
