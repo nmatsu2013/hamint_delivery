@@ -1,0 +1,16 @@
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+*.log
+
+# Vercel local project link
+.vercel/
+
+# macOS
+.DS_Store

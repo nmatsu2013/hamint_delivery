@@ -1,0 +1,190 @@
+-- 受注管理システム seed（韓国医療製品 受発注システム）
+-- 内容：製品28件 ＋ 受注管理画面（一覧・明細）のサンプルに合わせた各テーブルのデータ
+-- 前提：master-definitions.md のテーブルが作成済みで、中身が空の「検証環境」で実行すること。
+-- 注意：
+--  ・顧客名、金額、番号、住所、電話、追跡番号などはすべて架空のサンプル値です。
+--  ・韓国ウォンと円の換算、関税・税額は仮の値です（税区分・関税率は要確認）。
+--  ・初回のみ実行。やり直すときは、先に関連テーブルのデータを削除してください。
+--  ・請求金額（invoices.amount）は税込（仮に10%）、請求明細（invoice_lines.amount）は税抜です。
+--  ・受注の状態に「輸入・輸送中」を使っています（受注画面に合わせた値）。
+
+begin;
+
+-- ① 仮の仕入先（仕入先マスタが未登録のため。実際のメーカーに差し替える）
+insert into suppliers (supplier_code, supplier_name, country, currency, is_active)
+values ('S000', '【仮】仕入先未設定', 'KR', 'KRW', true)
+on conflict (supplier_code) do nothing;
+
+-- ② 製品
+-- model_no は未確定のため 'TBD-Pxxx' を仮置き。pack_qty=1 / unit='個' も仮置き。
+-- 優先度「未確認」の商品は is_active=false（受注画面に出さない）。
+insert into products (
+  product_code, product_name, model_no, supplier_id, category,
+  material, thickness, length_mm, spec_note, usage, priority_class,
+  pack_qty, unit, is_lot_managed, is_expiry_managed, regulatory_info, is_active
+)
+select
+  v.product_code, v.product_name, 'TBD-' || v.product_code, s.id, v.category,
+  v.material, v.thickness, v.length_mm, v.spec_note, v.usage, v.priority_class,
+  1, '個', v.is_lot_managed, v.is_expiry_managed, v.regulatory_info, v.is_active
+from (values
+  ('P001','Fiora thread-est','糸リフト',null,null,null,'詳細要確認（注文量は多い可能性）','顔のたるみ改善','主力候補',true,true,null,true),
+  ('P002','Fiora thread PCL 3D','糸リフト','PCL',null,null,'3D','顔のリフトアップ','主力候補',true,true,null,true),
+  ('P003','Fiora thread Cog 360','糸リフト','PDO',null,null,'360度コグ','頬・口元のたるみ改善','主力候補',true,true,null,true),
+  ('P004','Fiora thread Arrow cog','糸リフト',null,null,null,'矢印型コグ','顔のリフトアップ','主力候補',true,true,null,true),
+  ('P005','Posh cog360','糸リフト',null,null,null,'360度コグ','顔のたるみ改善','通常商品',true,true,null,true),
+  ('P006','Double arm','糸リフト',null,null,null,'両端針タイプと推定（要確認）','リフトアップ施術','通常商品',true,true,null,true),
+  ('P007','Ace needle 34G 2mm','注射針',null,'34G',2,null,'美容医療の注入施術','通常商品',true,true,null,true),
+  ('P008','顎下用共同開発スレッド','糸リフト',null,null,null,'特殊仕様（共同開発品）','顎下のたるみ改善','独自開発品',true,true,null,true),
+  ('P009','OEM・特注スレッド','糸リフト',null,null,null,'顧客指定仕様（OEM・特注）','医師独自の美容施術','特注商品',true,true,null,true),
+  ('P010','隆鼻形成用スレッド','医療機器',null,null,null,null,'鼻の形状改善','主力関連候補',true,true,'要確認：医療機器の区分と販売要件を専門家に確認',true),
+  ('P011','ボツリヌストキシン製剤','医薬品',null,null,null,null,'シワ・エラの改善','関連商品候補',true,true,'要確認：医薬品。輸入・販売の可否と要件を専門家に確認',true),
+  ('P012','ヒアルロン酸製剤','注入製剤',null,null,null,null,'シワ改善・輪郭形成','関連商品候補',true,true,'要確認：区分（医療機器／医薬品）と要件を専門家に確認',true),
+  ('P013','脂肪溶解注射製剤','注入製剤',null,null,null,null,'部分的な脂肪の減少','関連商品候補',true,true,'要確認：医薬品に該当する可能性。要件を専門家に確認',true),
+  ('P014','その他美容医療機器','医療機器',null,null,null,null,'美容医療全般','その他',true,true,'要確認：医療機器の区分と販売要件を専門家に確認',true),
+  ('P015','その他医療用医薬品','医薬品',null,null,null,null,'医療機関での治療','その他',true,true,'要確認：医薬品。輸入・販売の可否と要件を専門家に確認',true),
+  ('P016','理化学機器','機器',null,null,null,null,'検査・研究','その他',false,false,null,true),
+  ('P017','健康器具','機器',null,null,null,null,'健康管理','その他',false,false,null,true),
+  ('P018','PDO Mono Thread','糸リフト','PDO',null,null,null,'肌のハリ・小ジワ改善','未確認',true,true,null,false),
+  ('P019','PDO Screw Thread','糸リフト','PDO',null,null,null,'肌のボリューム改善','未確認',true,true,null,false),
+  ('P020','PDO Twin Thread','糸リフト','PDO',null,null,null,'肌のハリ改善','未確認',true,true,null,false),
+  ('P021','PDO Mesh Thread','糸リフト','PDO',null,null,null,'組織の支持','未確認',true,true,null,false),
+  ('P022','PDO Tornado Thread','糸リフト','PDO',null,null,null,'肌のボリューム改善','未確認',true,true,null,false),
+  ('P023','PCL Mono Thread','糸リフト','PCL',null,null,null,'肌質改善','未確認',true,true,null,false),
+  ('P024','PCL Cog Thread','糸リフト','PCL',null,null,null,'リフトアップ','未確認',true,true,null,false),
+  ('P025','PLLA Thread','糸リフト','PLLA',null,null,null,'リフトアップ・肌質改善','未確認',true,true,null,false),
+  ('P026','ショッピングスレッド','糸リフト',null,null,null,null,'肌のハリ改善','未確認',true,true,null,false),
+  ('P027','マイクロカニューレ','糸リフト',null,null,null,null,'美容医療の注入施術','未確認',true,true,null,false),
+  ('P028','美容医療用注射針各種','糸リフト',null,null,null,null,'美容医療の注入施術','未確認',true,true,null,false)
+) as v(product_code, product_name, category, material, thickness, length_mm, spec_note, usage, priority_class,
+       is_lot_managed, is_expiry_managed, regulatory_info, is_active)
+cross join (select id from suppliers where supplier_code = 'S000') s
+on conflict (product_code) do nothing;
+
+-- ---------------------------------------------------------------
+-- ③ 仕入先の担当者（仮）
+-- ---------------------------------------------------------------
+insert into supplier_contacts (supplier_id, contact_name, department, email, is_primary) values ((select id from suppliers where supplier_code='S000'), '[担当者名]', '[部署]', '[メール]', true);
+
+-- ---------------------------------------------------------------
+-- ④ 顧客と配送先
+-- ---------------------------------------------------------------
+insert into customers (customer_code, clinic_name, clinic_name_kana, postal_code, address, tel, closing_day, payment_terms, is_active) values ('C001', 'さくら美容クリニック', 'サクラビヨウクリニック', '000-0000', '東京都（サンプル住所）', '00-0000-0000', 31, '月末締め翌月末払い', true);
+insert into customers (customer_code, clinic_name, clinic_name_kana, postal_code, address, tel, closing_day, payment_terms, is_active) values ('C002', 'みなと皮膚科クリニック', 'ミナトヒフカクリニック', '000-0000', '東京都（サンプル住所）', '00-0000-0000', 31, '月末締め翌月末払い', true);
+insert into customers (customer_code, clinic_name, clinic_name_kana, postal_code, address, tel, closing_day, payment_terms, is_active) values ('C003', 'あおぞらクリニック', 'アオゾラクリニック', '000-0000', '東京都（サンプル住所）', '00-0000-0000', 31, '月末締め翌月末払い', true);
+insert into customers (customer_code, clinic_name, clinic_name_kana, postal_code, address, tel, closing_day, payment_terms, is_active) values ('C004', 'はなみずき美容クリニック', 'ハナミズキビヨウクリニック', '000-0000', '東京都（サンプル住所）', '00-0000-0000', 31, '月末締め翌月末払い', true);
+insert into customers (customer_code, clinic_name, clinic_name_kana, postal_code, address, tel, closing_day, payment_terms, is_active) values ('C005', 'みどり美容外科', 'ミドリビヨウゲカ', '000-0000', '東京都（サンプル住所）', '00-0000-0000', 31, '月末締め翌月末払い', true);
+insert into customer_addresses (customer_id, ship_to_name, postal_code, address, recipient, tel, is_default) values ((select id from customers where customer_code='C001'), '本院', '000-0000', '東京都（サンプル住所・本院）', '[受取人]', '00-0000-0000', true);
+insert into customer_addresses (customer_id, ship_to_name, postal_code, address, recipient, tel, is_default) values ((select id from customers where customer_code='C002'), '本院', '000-0000', '東京都（サンプル住所・本院）', '[受取人]', '00-0000-0000', true);
+insert into customer_addresses (customer_id, ship_to_name, postal_code, address, recipient, tel, is_default) values ((select id from customers where customer_code='C003'), '本院', '000-0000', '東京都（サンプル住所・本院）', '[受取人]', '00-0000-0000', true);
+insert into customer_addresses (customer_id, ship_to_name, postal_code, address, recipient, tel, is_default) values ((select id from customers where customer_code='C003'), '分院', '000-0000', '東京都（サンプル住所・分院）', '[受取人]', '00-0000-0000', false);
+insert into customer_addresses (customer_id, ship_to_name, postal_code, address, recipient, tel, is_default) values ((select id from customers where customer_code='C004'), '本院', '000-0000', '東京都（サンプル住所・本院）', '[受取人]', '00-0000-0000', true);
+insert into customer_addresses (customer_id, ship_to_name, postal_code, address, recipient, tel, is_default) values ((select id from customers where customer_code='C005'), '本院', '000-0000', '東京都（サンプル住所・本院）', '[受取人]', '00-0000-0000', true);
+
+-- ---------------------------------------------------------------
+-- ⑤ 価格（仕入価格・輸入代行価格・標準単価・顧客別単価）
+-- ---------------------------------------------------------------
+insert into supplier_prices (product_id, unit_cost, currency, valid_from, valid_to) values ((select id from products where product_code='P001'), 16500, 'KRW', '2026-01-01', '2099-12-31');
+insert into supplier_prices (product_id, unit_cost, currency, valid_from, valid_to) values ((select id from products where product_code='P002'), 19000, 'KRW', '2026-01-01', '2099-12-31');
+insert into supplier_prices (product_id, unit_cost, currency, valid_from, valid_to) values ((select id from products where product_code='P003'), 18000, 'KRW', '2026-01-01', '2099-12-31');
+insert into supplier_prices (product_id, unit_cost, currency, valid_from, valid_to) values ((select id from products where product_code='P004'), 17000, 'KRW', '2026-01-01', '2099-12-31');
+insert into supplier_prices (product_id, unit_cost, currency, valid_from, valid_to) values ((select id from products where product_code='P005'), 15500, 'KRW', '2026-01-01', '2099-12-31');
+insert into supplier_prices (product_id, unit_cost, currency, valid_from, valid_to) values ((select id from products where product_code='P007'), 1900, 'KRW', '2026-01-01', '2099-12-31');
+insert into import_fees (product_id, fee_type, amount, rate, valid_from, valid_to) values (null, '率（仮）', null, 0.05, '2026-01-01', '2099-12-31');
+insert into customer_prices (customer_id, product_id, unit_price, tax_type, valid_from, valid_to) values (null, (select id from products where product_code='P001'), 3900, '課税（要確認）', '2026-01-01', '2099-12-31');
+insert into customer_prices (customer_id, product_id, unit_price, tax_type, valid_from, valid_to) values (null, (select id from products where product_code='P002'), 4400, '課税（要確認）', '2026-01-01', '2099-12-31');
+insert into customer_prices (customer_id, product_id, unit_price, tax_type, valid_from, valid_to) values (null, (select id from products where product_code='P003'), 4100, '課税（要確認）', '2026-01-01', '2099-12-31');
+insert into customer_prices (customer_id, product_id, unit_price, tax_type, valid_from, valid_to) values (null, (select id from products where product_code='P004'), 4100, '課税（要確認）', '2026-01-01', '2099-12-31');
+insert into customer_prices (customer_id, product_id, unit_price, tax_type, valid_from, valid_to) values (null, (select id from products where product_code='P005'), 3600, '課税（要確認）', '2026-01-01', '2099-12-31');
+insert into customer_prices (customer_id, product_id, unit_price, tax_type, valid_from, valid_to) values (null, (select id from products where product_code='P007'), 450, '課税（要確認）', '2026-01-01', '2099-12-31');
+insert into customer_prices (customer_id, product_id, unit_price, tax_type, valid_from, valid_to) values ((select id from customers where customer_code='C002'), (select id from products where product_code='P007'), 440, '課税（要確認）', '2026-01-01', '2099-12-31');
+
+-- ---------------------------------------------------------------
+-- ⑥ 受注・受注明細（受注一覧・受注明細の画面と同じ内容）
+-- ---------------------------------------------------------------
+insert into sales_orders (order_no, order_date, customer_id, ship_to_id, requested_date, status, total_amount, note) values ('so261105-01', '2026-11-05', (select id from customers where customer_code='C001'), (select id from customer_addresses where customer_id=(select id from customers where customer_code='C001') and ship_to_name='本院'), '2026-11-19', '完了', 144000, null);
+insert into sales_order_lines (sales_order_id, product_id, quantity, unit_price, line_status) values ((select id from sales_orders where order_no='so261105-01'), (select id from products where product_code='P005'), 40, 3600, '完了');
+insert into sales_orders (order_no, order_date, customer_id, ship_to_id, requested_date, status, total_amount, note) values ('so261112-02', '2026-11-12', (select id from customers where customer_code='C005'), (select id from customer_addresses where customer_id=(select id from customers where customer_code='C005') and ship_to_name='本院'), '2026-11-26', '出荷済', 205000, null);
+insert into sales_order_lines (sales_order_id, product_id, quantity, unit_price, line_status) values ((select id from sales_orders where order_no='so261112-02'), (select id from products where product_code='P004'), 50, 4100, '出荷済');
+insert into sales_orders (order_no, order_date, customer_id, ship_to_id, requested_date, status, total_amount, note) values ('so261120-01', '2026-11-20', (select id from customers where customer_code='C004'), (select id from customer_addresses where customer_id=(select id from customers where customer_code='C004') and ship_to_name='本院'), '2026-12-04', '輸入・輸送中', 281000, null);
+insert into sales_order_lines (sales_order_id, product_id, quantity, unit_price, line_status) values ((select id from sales_orders where order_no='so261120-01'), (select id from products where product_code='P003'), 40, 4100, '輸送中');
+insert into sales_order_lines (sales_order_id, product_id, quantity, unit_price, line_status) values ((select id from sales_orders where order_no='so261120-01'), (select id from products where product_code='P007'), 100, 450, '輸送中');
+insert into sales_order_lines (sales_order_id, product_id, quantity, unit_price, line_status) values ((select id from sales_orders where order_no='so261120-01'), (select id from products where product_code='P005'), 20, 3600, '輸送中');
+insert into sales_orders (order_no, order_date, customer_id, ship_to_id, requested_date, status, total_amount, note) values ('so261122-01', '2026-11-22', (select id from customers where customer_code='C003'), (select id from customer_addresses where customer_id=(select id from customers where customer_code='C003') and ship_to_name='分院'), '2026-12-12', '発注済', 352000, null);
+insert into sales_order_lines (sales_order_id, product_id, quantity, unit_price, line_status) values ((select id from sales_orders where order_no='so261122-01'), (select id from products where product_code='P002'), 65, 4400, '発注済');
+insert into sales_order_lines (sales_order_id, product_id, quantity, unit_price, line_status) values ((select id from sales_orders where order_no='so261122-01'), (select id from products where product_code='P003'), 15, 4100, '発注済');
+insert into sales_order_lines (sales_order_id, product_id, quantity, unit_price, line_status) values ((select id from sales_orders where order_no='so261122-01'), (select id from products where product_code='P007'), 10, 450, '発注済');
+insert into sales_orders (order_no, order_date, customer_id, ship_to_id, requested_date, status, total_amount, note) values ('so261124-02', '2026-11-24', (select id from customers where customer_code='C002'), (select id from customer_addresses where customer_id=(select id from customers where customer_code='C002') and ship_to_name='本院'), '2026-12-05', '受付', 88000, null);
+insert into sales_order_lines (sales_order_id, product_id, quantity, unit_price, line_status) values ((select id from sales_orders where order_no='so261124-02'), (select id from products where product_code='P007'), 200, 440, '受付');
+insert into sales_orders (order_no, order_date, customer_id, ship_to_id, requested_date, status, total_amount, note) values ('so261124-03', '2026-11-24', (select id from customers where customer_code='C001'), (select id from customer_addresses where customer_id=(select id from customers where customer_code='C001') and ship_to_name='本院'), '2026-12-10', '受付', 246000, null);
+insert into sales_order_lines (sales_order_id, product_id, quantity, unit_price, line_status) values ((select id from sales_orders where order_no='so261124-03'), (select id from products where product_code='P003'), 30, 4100, '受付');
+insert into sales_order_lines (sales_order_id, product_id, quantity, unit_price, line_status) values ((select id from sales_orders where order_no='so261124-03'), (select id from products where product_code='P004'), 30, 4100, '受付');
+
+-- ---------------------------------------------------------------
+-- ⑦ 発注・発注明細（受注明細に紐づく）
+-- ---------------------------------------------------------------
+insert into purchase_orders (po_no, supplier_id, ordered_date, promised_date, currency, total_amount, status, note) values ('po261106-01', (select id from suppliers where supplier_code='S000'), '2026-11-06', '2026-11-12', 'KRW', 620000, '入荷完了', null);
+insert into purchase_order_lines (purchase_order_id, product_id, quantity, unit_cost, currency, sales_order_line_id, received_date, good_qty, defect_qty, damaged_qty, claim_status) values ((select id from purchase_orders where po_no='po261106-01'), (select id from products where product_code='P005'), 40, 15500, 'KRW', (select l.id from sales_order_lines l join sales_orders o on o.id=l.sales_order_id join products p on p.id=l.product_id where o.order_no='so261105-01' and p.product_code='P005'), '2026-11-13', 40, 0, 0, 'なし');
+insert into purchase_orders (po_no, supplier_id, ordered_date, promised_date, currency, total_amount, status, note) values ('po261113-01', (select id from suppliers where supplier_code='S000'), '2026-11-13', '2026-11-18', 'KRW', 850000, '入荷完了', null);
+insert into purchase_order_lines (purchase_order_id, product_id, quantity, unit_cost, currency, sales_order_line_id, received_date, good_qty, defect_qty, damaged_qty, claim_status) values ((select id from purchase_orders where po_no='po261113-01'), (select id from products where product_code='P004'), 50, 17000, 'KRW', (select l.id from sales_order_lines l join sales_orders o on o.id=l.sales_order_id join products p on p.id=l.product_id where o.order_no='so261112-02' and p.product_code='P004'), '2026-11-18', 50, 0, 0, 'なし');
+insert into purchase_orders (po_no, supplier_id, ordered_date, promised_date, currency, total_amount, status, note) values ('po261121-01', (select id from suppliers where supplier_code='S000'), '2026-11-21', '2026-11-27', 'KRW', 1220000, '発注済', null);
+insert into purchase_order_lines (purchase_order_id, product_id, quantity, unit_cost, currency, sales_order_line_id) values ((select id from purchase_orders where po_no='po261121-01'), (select id from products where product_code='P003'), 40, 18000, 'KRW', (select l.id from sales_order_lines l join sales_orders o on o.id=l.sales_order_id join products p on p.id=l.product_id where o.order_no='so261120-01' and p.product_code='P003'));
+insert into purchase_order_lines (purchase_order_id, product_id, quantity, unit_cost, currency, sales_order_line_id) values ((select id from purchase_orders where po_no='po261121-01'), (select id from products where product_code='P007'), 100, 1900, 'KRW', (select l.id from sales_order_lines l join sales_orders o on o.id=l.sales_order_id join products p on p.id=l.product_id where o.order_no='so261120-01' and p.product_code='P007'));
+insert into purchase_order_lines (purchase_order_id, product_id, quantity, unit_cost, currency, sales_order_line_id) values ((select id from purchase_orders where po_no='po261121-01'), (select id from products where product_code='P005'), 20, 15500, 'KRW', (select l.id from sales_order_lines l join sales_orders o on o.id=l.sales_order_id join products p on p.id=l.product_id where o.order_no='so261120-01' and p.product_code='P005'));
+insert into purchase_orders (po_no, supplier_id, ordered_date, promised_date, currency, total_amount, status, note) values ('po261123-01', (select id from suppliers where supplier_code='S000'), '2026-11-23', '2026-12-02', 'KRW', 1524000, '発注済', null);
+insert into purchase_order_lines (purchase_order_id, product_id, quantity, unit_cost, currency, sales_order_line_id) values ((select id from purchase_orders where po_no='po261123-01'), (select id from products where product_code='P002'), 65, 19000, 'KRW', (select l.id from sales_order_lines l join sales_orders o on o.id=l.sales_order_id join products p on p.id=l.product_id where o.order_no='so261122-01' and p.product_code='P002'));
+insert into purchase_order_lines (purchase_order_id, product_id, quantity, unit_cost, currency, sales_order_line_id) values ((select id from purchase_orders where po_no='po261123-01'), (select id from products where product_code='P003'), 15, 18000, 'KRW', (select l.id from sales_order_lines l join sales_orders o on o.id=l.sales_order_id join products p on p.id=l.product_id where o.order_no='so261122-01' and p.product_code='P003'));
+insert into purchase_order_lines (purchase_order_id, product_id, quantity, unit_cost, currency, sales_order_line_id) values ((select id from purchase_orders where po_no='po261123-01'), (select id from products where product_code='P007'), 10, 1900, 'KRW', (select l.id from sales_order_lines l join sales_orders o on o.id=l.sales_order_id join products p on p.id=l.product_id where o.order_no='so261122-01' and p.product_code='P007'));
+
+-- ---------------------------------------------------------------
+-- ⑧ 輸入申請・申請書類
+-- ---------------------------------------------------------------
+insert into import_applications (application_no, purchase_order_id, application_type, applied_date, status, confirmed_date, customs_broker, import_permit_date, declaration_no, taxable_value, import_consumption_tax, customs_fee, other_costs) values ('ia261107-01', (select id from purchase_orders where po_no='po261106-01'), '輸入申請（種別は要確認）', '2026-11-07', '承認', '2026-11-10', 'サンプル通関（株）', '2026-11-12', 'SAMPLE-DECL-0001', 68200, 6820, 5000, 12000);
+insert into import_documents (application_id, document_name, submitted_date) values ((select id from import_applications where application_no='ia261107-01'), 'インボイス', '2026-11-07');
+insert into import_documents (application_id, document_name, submitted_date) values ((select id from import_applications where application_no='ia261107-01'), 'パッキングリスト', '2026-11-07');
+insert into import_applications (application_no, purchase_order_id, application_type, applied_date, status, confirmed_date, customs_broker, import_permit_date, declaration_no, taxable_value, import_consumption_tax, customs_fee, other_costs) values ('ia261114-01', (select id from purchase_orders where po_no='po261113-01'), '輸入申請（種別は要確認）', '2026-11-14', '承認', '2026-11-16', 'サンプル通関（株）', '2026-11-17', 'SAMPLE-DECL-0002', 93500, 9350, 5000, 12000);
+insert into import_documents (application_id, document_name, submitted_date) values ((select id from import_applications where application_no='ia261114-01'), 'インボイス', '2026-11-14');
+insert into import_documents (application_id, document_name, submitted_date) values ((select id from import_applications where application_no='ia261114-01'), 'パッキングリスト', '2026-11-14');
+insert into import_applications (application_no, purchase_order_id, application_type, applied_date, status, confirmed_date, customs_broker, import_permit_date, declaration_no, taxable_value, import_consumption_tax, customs_fee, other_costs) values ('ia261122-01', (select id from purchase_orders where po_no='po261121-01'), '輸入申請（種別は要確認）', '2026-11-22', '確認中', null, null, null, null, null, null, null, null);
+insert into import_documents (application_id, document_name, submitted_date) values ((select id from import_applications where application_no='ia261122-01'), 'インボイス', '2026-11-22');
+insert into import_documents (application_id, document_name, submitted_date) values ((select id from import_applications where application_no='ia261122-01'), 'パッキングリスト', '2026-11-22');
+insert into import_applications (application_no, purchase_order_id, application_type, applied_date, status, confirmed_date, customs_broker, import_permit_date, declaration_no, taxable_value, import_consumption_tax, customs_fee, other_costs) values ('ia261123-01', (select id from purchase_orders where po_no='po261123-01'), '輸入申請（種別は要確認）', null, '書類準備中', null, null, null, null, null, null, null, null);
+insert into import_documents (application_id, document_name, submitted_date) values ((select id from import_applications where application_no='ia261123-01'), 'インボイス', null);
+insert into import_documents (application_id, document_name, submitted_date) values ((select id from import_applications where application_no='ia261123-01'), 'パッキングリスト', null);
+
+-- ---------------------------------------------------------------
+-- ⑨ 配送（国際輸送＝韓国から入荷、国内配送＝クリニックへ）
+-- ---------------------------------------------------------------
+insert into shipments (shipment_no, direction, purchase_order_id, shipped_date, carrier, tracking_no, delivered_date, status, transport_mode, bl_awb_no, etd, eta) values ('in261107-01', 'international', (select id from purchase_orders where po_no='po261106-01'), '2026-11-07', 'DHL', 'SAMPLE-AWB-0003', '2026-11-13', '納品済', '航空便', 'SAMPLE-AWB-0003', '2026-11-07', '2026-11-13');
+insert into shipment_lines (shipment_id, purchase_order_line_id, quantity) values ((select id from shipments where shipment_no='in261107-01'), (select l.id from purchase_order_lines l join purchase_orders o on o.id=l.purchase_order_id join products p on p.id=l.product_id where o.po_no='po261106-01' and p.product_code='P005'), 40);
+insert into shipments (shipment_no, direction, purchase_order_id, shipped_date, carrier, tracking_no, delivered_date, status, transport_mode, bl_awb_no, etd, eta) values ('in261114-01', 'international', (select id from purchase_orders where po_no='po261113-01'), '2026-11-14', 'DHL', 'SAMPLE-AWB-0002', '2026-11-18', '納品済', '航空便', 'SAMPLE-AWB-0002', '2026-11-14', '2026-11-18');
+insert into shipment_lines (shipment_id, purchase_order_line_id, quantity) values ((select id from shipments where shipment_no='in261114-01'), (select l.id from purchase_order_lines l join purchase_orders o on o.id=l.purchase_order_id join products p on p.id=l.product_id where o.po_no='po261113-01' and p.product_code='P004'), 50);
+insert into shipments (shipment_no, direction, purchase_order_id, shipped_date, carrier, tracking_no, delivered_date, status, transport_mode, bl_awb_no, etd, eta) values ('in261124-01', 'international', (select id from purchase_orders where po_no='po261121-01'), '2026-11-24', 'DHL', 'SAMPLE-AWB-0001', null, '発送済', '航空便', 'SAMPLE-AWB-0001', '2026-11-24', '2026-11-27');
+insert into shipment_lines (shipment_id, purchase_order_line_id, quantity) values ((select id from shipments where shipment_no='in261124-01'), (select l.id from purchase_order_lines l join purchase_orders o on o.id=l.purchase_order_id join products p on p.id=l.product_id where o.po_no='po261121-01' and p.product_code='P003'), 40);
+insert into shipment_lines (shipment_id, purchase_order_line_id, quantity) values ((select id from shipments where shipment_no='in261124-01'), (select l.id from purchase_order_lines l join purchase_orders o on o.id=l.purchase_order_id join products p on p.id=l.product_id where o.po_no='po261121-01' and p.product_code='P007'), 100);
+insert into shipment_lines (shipment_id, purchase_order_line_id, quantity) values ((select id from shipments where shipment_no='in261124-01'), (select l.id from purchase_order_lines l join purchase_orders o on o.id=l.purchase_order_id join products p on p.id=l.product_id where o.po_no='po261121-01' and p.product_code='P005'), 20);
+
+-- ---------------------------------------------------------------
+-- ⑩ ロット（入庫・検品後に登録）
+-- ---------------------------------------------------------------
+insert into lots (product_id, lot_no, expiry_date, manufactured_date, purchase_order_line_id, received_qty, on_hand_qty, status) values ((select id from products where product_code='P005'), 'SAMPLE-LOT-P005-01', '2028-10-31', '2026-08-20', (select l.id from purchase_order_lines l join purchase_orders o on o.id=l.purchase_order_id join products p on p.id=l.product_id where o.po_no='po261106-01' and p.product_code='P005'), 40, 0, '使用可');
+insert into lot_movements (lot_id, movement_type, quantity, source_type, source_id) values ((select id from lots where lot_no='SAMPLE-LOT-P005-01'), 'receipt', 40, 'purchase_order_line', (select l.id from purchase_order_lines l join purchase_orders o on o.id=l.purchase_order_id join products p on p.id=l.product_id where o.po_no='po261106-01' and p.product_code='P005'));
+insert into lots (product_id, lot_no, expiry_date, manufactured_date, purchase_order_line_id, received_qty, on_hand_qty, status) values ((select id from products where product_code='P004'), 'SAMPLE-LOT-P004-01', '2028-11-30', '2026-09-15', (select l.id from purchase_order_lines l join purchase_orders o on o.id=l.purchase_order_id join products p on p.id=l.product_id where o.po_no='po261113-01' and p.product_code='P004'), 50, 0, '使用可');
+insert into lot_movements (lot_id, movement_type, quantity, source_type, source_id) values ((select id from lots where lot_no='SAMPLE-LOT-P004-01'), 'receipt', 50, 'purchase_order_line', (select l.id from purchase_order_lines l join purchase_orders o on o.id=l.purchase_order_id join products p on p.id=l.product_id where o.po_no='po261113-01' and p.product_code='P004'));
+insert into shipments (shipment_no, direction, sales_order_id, ship_to_id, shipped_date, carrier, tracking_no, delivered_date, status) values ('sh261115-01', 'domestic', (select id from sales_orders where order_no='so261105-01'), (select id from customer_addresses where customer_id=(select id from customers where customer_code='C001') and ship_to_name='本院'), '2026-11-15', 'ヤマト運輸', 'SAMPLE-TRK-0001', '2026-11-17', '納品済');
+insert into shipment_lines (shipment_id, sales_order_line_id, lot_id, quantity) values ((select id from shipments where shipment_no='sh261115-01'), (select l.id from sales_order_lines l join sales_orders o on o.id=l.sales_order_id join products p on p.id=l.product_id where o.order_no='so261105-01' and p.product_code='P005'), (select id from lots where lot_no='SAMPLE-LOT-P005-01'), 40);
+insert into lot_movements (lot_id, movement_type, quantity, source_type, source_id, customer_id, ship_to_id) values ((select id from lots where lot_no='SAMPLE-LOT-P005-01'), 'shipment', 40, 'shipment_line', (select l.id from shipment_lines l where l.shipment_id=(select id from shipments where shipment_no='sh261115-01') and l.lot_id=(select id from lots where lot_no='SAMPLE-LOT-P005-01')), (select id from customers where customer_code='C001'), (select id from customer_addresses where customer_id=(select id from customers where customer_code='C001') and ship_to_name='本院'));
+insert into shipments (shipment_no, direction, sales_order_id, ship_to_id, shipped_date, carrier, tracking_no, delivered_date, status) values ('sh261121-01', 'domestic', (select id from sales_orders where order_no='so261112-02'), (select id from customer_addresses where customer_id=(select id from customers where customer_code='C005') and ship_to_name='本院'), '2026-11-21', 'ヤマト運輸', 'SAMPLE-TRK-0002', '2026-11-23', '納品済');
+insert into shipment_lines (shipment_id, sales_order_line_id, lot_id, quantity) values ((select id from shipments where shipment_no='sh261121-01'), (select l.id from sales_order_lines l join sales_orders o on o.id=l.sales_order_id join products p on p.id=l.product_id where o.order_no='so261112-02' and p.product_code='P004'), (select id from lots where lot_no='SAMPLE-LOT-P004-01'), 50);
+insert into lot_movements (lot_id, movement_type, quantity, source_type, source_id, customer_id, ship_to_id) values ((select id from lots where lot_no='SAMPLE-LOT-P004-01'), 'shipment', 50, 'shipment_line', (select l.id from shipment_lines l where l.shipment_id=(select id from shipments where shipment_no='sh261121-01') and l.lot_id=(select id from lots where lot_no='SAMPLE-LOT-P004-01')), (select id from customers where customer_code='C005'), (select id from customer_addresses where customer_id=(select id from customers where customer_code='C005') and ship_to_name='本院'));
+
+-- ---------------------------------------------------------------
+-- ⑪ 請求・入金（出荷済み・完了の受注のみ）
+-- ---------------------------------------------------------------
+insert into invoices (invoice_no, customer_id, invoice_date, due_date, amount, status) values ('inv261117-01', (select id from customers where customer_code='C001'), '2026-11-17', '2026-12-31', 158400, '入金済');
+insert into invoice_lines (invoice_id, sales_order_line_id, amount) values ((select id from invoices where invoice_no='inv261117-01'), (select l.id from sales_order_lines l join sales_orders o on o.id=l.sales_order_id join products p on p.id=l.product_id where o.order_no='so261105-01' and p.product_code='P005'), 144000);
+insert into payments (invoice_id, paid_date, paid_amount, method, fee) values ((select id from invoices where invoice_no='inv261117-01'), '2026-11-20', 158400, '銀行振込', null);
+insert into invoices (invoice_no, customer_id, invoice_date, due_date, amount, status) values ('inv261123-01', (select id from customers where customer_code='C005'), '2026-11-23', '2026-12-31', 225500, '請求済');
+insert into invoice_lines (invoice_id, sales_order_line_id, amount) values ((select id from invoices where invoice_no='inv261123-01'), (select l.id from sales_order_lines l join sales_orders o on o.id=l.sales_order_id join products p on p.id=l.product_id where o.order_no='so261112-02' and p.product_code='P004'), 205000);
+
+commit;

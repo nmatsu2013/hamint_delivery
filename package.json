@@ -1,0 +1,48 @@
+{
+  "name": "hamint-delivery",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "韓国医療製品 受発注システム",
+  "scripts": {
+    "dev": "concurrently -n server,web -c cyan,magenta \"npm:dev:server\" \"npm:dev:frontend\"",
+    "dev:server": "tsx watch src/server/main.ts",
+    "dev:frontend": "vite",
+    "build": "npm run build:server && npm run build:frontend",
+    "build:server": "tsup src/server/main.ts --format esm --out-dir dist/server --sourcemap --clean",
+    "build:frontend": "vite build",
+    "start": "node dist/server/main.js",
+    "typecheck": "tsc -p tsconfig.server.json --noEmit && tsc -p tsconfig.frontend.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:seed": "tsx scripts/seed.ts",
+    "db:setup": "npm run db:migrate && npm run db:seed"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "@tanstack/react-query": "^5.59.20",
+    "dotenv": "^16.4.5",
+    "hono": "^4.6.10",
+    "jose": "^5.9.6",
+    "pg": "^8.13.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "zod": "^3.23.8",
+    "zustand": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/pg": "^8.11.10",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "concurrently": "^9.1.0",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.5"
+  }
+}
