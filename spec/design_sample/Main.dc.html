@@ -10,144 +10,173 @@
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&amp;display=swap">
 <style>
 body{margin:0}
 a{color:#2A7F6C}
 a:hover{color:#1E6657}
 </style>
 </helmet>
-<div style="min-height: 1000px; background: #FFFFFF; font-family: 'Noto Sans JP', system-ui, sans-serif; color: #1A2B42; display: flex; flex-direction: column">
+<div style="min-height: 900px; background: #FFFFFF; font-family: 'Noto Sans JP', system-ui, sans-serif; font-size: 12px; line-height: 1.5; color: #1A2B42; display: flex; flex-direction: column">
 
-<header style="background: #162840; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; padding: 14px 40px">
-<span style="font-size: 22px; font-weight: 900; color: #FFFFFF; letter-spacing: 1px">受発注管理</span>
-<nav style="display: flex; flex-wrap: wrap; gap: 6px 26px; flex: 1">
-<a href="Main.dc.html" style="font-size: 17px; font-weight: 700; color: #FFFFFF; text-decoration: none; border-bottom: 3px solid #4FD1C0; padding: 6px 0">受注一覧</a>
-<a href="Main.dc.html" style="font-size: 17px; color: #C5D2E0; text-decoration: none; padding: 6px 0">発注一覧</a>
-<a href="Main.dc.html" style="font-size: 17px; color: #C5D2E0; text-decoration: none; padding: 6px 0">輸入・配送</a>
-<a href="Main.dc.html" style="font-size: 17px; color: #C5D2E0; text-decoration: none; padding: 6px 0">請求・入金</a>
-<a href="Main.dc.html" style="font-size: 17px; color: #C5D2E0; text-decoration: none; padding: 6px 0">ロット</a>
-<a href="Main.dc.html" style="font-size: 17px; color: #C5D2E0; text-decoration: none; padding: 6px 0">製品</a>
-<a href="Main.dc.html" style="font-size: 17px; color: #C5D2E0; text-decoration: none; padding: 6px 0">顧客</a>
-<a href="Main.dc.html" style="font-size: 17px; color: #C5D2E0; text-decoration: none; padding: 6px 0">各種設定</a>
+<header style="background: #162840; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 20px; padding: 8px 32px">
+<span style="font-size: 15px; font-weight: 700; color: #FFFFFF; letter-spacing: 0.5px">受発注管理</span>
+<nav style="display: flex; flex-wrap: wrap; gap: 2px 16px; flex: 1">
+<a href="Main.dc.html" style="font-size: 12px; font-weight: 700; color: #FFFFFF; text-decoration: none; border-bottom: 2px solid #4FD1C0; padding: 5px 0">受注一覧</a>
+<a href="Main.dc.html" style="font-size: 12px; color: #C5D2E0; text-decoration: none; padding: 5px 0">発注</a>
+<a href="Main.dc.html" style="font-size: 12px; color: #C5D2E0; text-decoration: none; padding: 5px 0">輸入・配送</a>
+<a href="Main.dc.html" style="font-size: 12px; color: #C5D2E0; text-decoration: none; padding: 5px 0">請求・入金</a>
+<a href="Main.dc.html" style="font-size: 12px; color: #C5D2E0; text-decoration: none; padding: 5px 0">ロット</a>
+<a href="Main.dc.html" style="font-size: 12px; color: #C5D2E0; text-decoration: none; padding: 5px 0">顧客・製品</a>
+<a href="Main.dc.html" style="font-size: 12px; color: #C5D2E0; text-decoration: none; padding: 5px 0">設定</a>
 </nav>
-<a href="Main.dc.html" style="font-size: 16px; font-weight: 700; color: #FFFFFF; background: #00A497; text-decoration: none; padding: 10px 20px; border-radius: 10px">＋ 新規受注</a>
+<a href="Main.dc.html" style="font-size: 12px; font-weight: 700; color: #FFFFFF; background: #00A497; text-decoration: none; padding: 6px 14px; border-radius: 6px">＋ 新規受注</a>
+<span style="font-size: 12px; color: #C5D2E0">営業担当（営業）</span>
+<a href="Main.dc.html" style="font-size: 12px; color: #FFFFFF; text-decoration: none; border: 1px solid #5B7090; padding: 5px 12px; border-radius: 6px">ログアウト</a>
 </header>
 
-<main style="max-width: 1440px; width: 100%; box-sizing: border-box; padding: 40px 80px 56px; display: flex; flex-direction: column; gap: 28px">
+<main style="max-width: 1440px; width: 100%; box-sizing: border-box; padding: 16px 32px 24px; display: flex; flex-direction: column; gap: 12px">
 
-<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 10px 24px">
 <div>
-<div style="font-size: 15px; font-weight: 700; letter-spacing: 3px; color: #2A7F6C">SALES ORDERS</div>
-<h1 style="margin: 6px 0 8px; font-size: 44px; font-weight: 900; line-height: 1.2">受注管理 一覧</h1>
-<p style="margin: 0; font-size: 18px; color: #5B6B80">注文から発注・輸入・出荷・入金までの進み具合を、受注ごとに確認します。</p>
+<h1 style="margin: 0; font-size: 18px; font-weight: 700; line-height: 1.3">受注管理 一覧</h1>
+<p style="margin: 2px 0 0; font-size: 12px; color: #5B6B80">受注から発注・輸入・出荷・入金までの進み具合を確認します（サンプルデータ）　表示日：2026年11月25日（水）</p>
 </div>
-<div style="background: #F6F8FA; border-radius: 16px; padding: 16px 28px; box-shadow: 0 0 0 1px #E1E7EE">
-<div style="font-size: 14px; color: #5B6B80">表示日</div>
-<div style="font-size: 22px; font-weight: 700; margin-top: 2px">2026年11月24日（火）</div>
-</div>
-</div>
-
-<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
 <sc-for list="{{kpis}}" as="k" hint-placeholder-count="4">
-<div style="background: #F6F8FA; border-radius: 16px; padding: 20px 26px 22px; border-top: 5px solid {{k.color}}; box-shadow: 0 0 0 1px #E1E7EE">
-<div style="font-size: 16px; color: #5B6B80">{{k.label}}</div>
-<div style="margin-top: 6px"><span style="font-size: 44px; font-weight: 900">{{k.value}}</span><span style="font-size: 18px; color: #5B6B80; margin-left: 6px">件</span></div>
+<div style="background: #F6F8FA; border-radius: 8px; box-shadow: 0 0 0 1px #E1E7EE; border-left: 3px solid {{k.color}}; padding: 6px 14px; display: flex; align-items: baseline; gap: 8px; min-width: 128px">
+<span style="font-size: 12px; color: #5B6B80">{{k.label}}</span>
+<span style="font-size: 18px; font-weight: 700; margin-left: auto">{{k.value}}</span>
+<span style="font-size: 12px; color: #5B6B80">件</span>
 </div>
 </sc-for>
 </div>
+</div>
 
-<section style="background: #F6F8FA; border-radius: 20px; box-shadow: 0 0 0 1px #E1E7EE; overflow: hidden">
-<div style="padding: 28px 32px 22px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 18px">
-<div>
-<h2 style="margin: 0; font-size: 26px; font-weight: 900">受注一覧</h2>
-<p style="margin: 6px 0 0; font-size: 16px; color: #5B6B80">行を選ぶと受注明細が開きます（画面内のデータはサンプルです）</p>
+<section style="background: #F6F8FA; border-radius: 10px; box-shadow: 0 0 0 1px #E1E7EE; overflow: hidden">
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; padding: 10px 14px">
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{chips}}" as="c" hint-placeholder-count="6">
+<span style="font-size: 12px; font-weight: {{c.weight}}; color: {{c.fg}}; background: {{c.bg}}; padding: 4px 12px; border-radius: 14px; white-space: nowrap">{{c.label}}<span style="margin-left: 6px; opacity: 0.8">{{c.count}}</span></span>
+</sc-for>
 </div>
-<div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center">
-<div style="display: flex; flex-wrap: wrap; gap: 8px">
-<span style="font-size: 15px; font-weight: 700; color: #FFFFFF; background: #162840; padding: 8px 16px; border-radius: 20px">すべて</span>
-<span style="font-size: 15px; color: #1A2B42; background: #EAF0F5; padding: 8px 16px; border-radius: 20px">受付</span>
-<span style="font-size: 15px; color: #1A2B42; background: #EAF0F5; padding: 8px 16px; border-radius: 20px">発注済</span>
-<span style="font-size: 15px; color: #1A2B42; background: #EAF0F5; padding: 8px 16px; border-radius: 20px">輸入・輸送中</span>
-<span style="font-size: 15px; color: #1A2B42; background: #EAF0F5; padding: 8px 16px; border-radius: 20px">出荷済</span>
-<span style="font-size: 15px; color: #1A2B42; background: #EAF0F5; padding: 8px 16px; border-radius: 20px">完了</span>
-</div>
-<label style="display: flex; align-items: center; gap: 10px; border: 1px solid #CBD6E2; border-radius: 12px; padding: 0 16px; background: #FFFFFF; min-height: 46px">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B6B80" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
-<input type="text" placeholder="顧客名・受注番号・製品名" aria-label="受注を検索" style="border: none; outline: none; font-size: 16px; width: 260px; font-family: inherit; color: #1A2B42; background: transparent">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+<label style="display: flex; align-items: center; gap: 6px; border: 1px solid #CBD6E2; border-radius: 6px; padding: 0 10px; background: #FFFFFF; min-height: 28px">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#5B6B80" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
+<input type="text" placeholder="顧客名・受注番号・製品名" aria-label="受注を検索" style="border: none; outline: none; font-size: 12px; width: 190px; font-family: inherit; color: #1A2B42; background: transparent">
 </label>
+<a href="Main.dc.html" style="font-size: 12px; font-weight: 700; color: #FFFFFF; background: #00A497; text-decoration: none; padding: 6px 14px; border-radius: 6px">CSV出力</a>
 </div>
 </div>
 
 <div style="overflow-x: auto">
-<table style="width: 100%; min-width: 1180px; border-collapse: collapse; font-size: 16px">
+<table style="width: 100%; min-width: 1200px; border-collapse: collapse; font-size: 12px">
 <thead>
 <tr style="background: #ECF0F4">
-<th scope="col" style="text-align: left; padding: 14px 16px 14px 32px; font-size: 15px; color: #3F5068; font-weight: 700">受注日</th>
-<th scope="col" style="text-align: left; padding: 14px 16px; font-size: 15px; color: #3F5068; font-weight: 700">状態</th>
-<th scope="col" style="text-align: left; padding: 14px 16px; font-size: 15px; color: #3F5068; font-weight: 700">受注番号</th>
-<th scope="col" style="text-align: left; padding: 14px 16px; font-size: 15px; color: #3F5068; font-weight: 700">顧客（配送先）</th>
-<th scope="col" style="text-align: left; padding: 14px 16px; font-size: 15px; color: #3F5068; font-weight: 700">主な製品</th>
-<th scope="col" style="text-align: right; padding: 14px 16px; font-size: 15px; color: #3F5068; font-weight: 700">数量</th>
-<th scope="col" style="text-align: right; padding: 14px 16px; font-size: 15px; color: #3F5068; font-weight: 700">金額（税抜）</th>
-<th scope="col" style="text-align: left; padding: 14px 16px; font-size: 15px; color: #3F5068; font-weight: 700">希望納期</th>
-<th scope="col" style="text-align: left; padding: 14px 16px; font-size: 15px; color: #3F5068; font-weight: 700">入金</th>
-<th scope="col" style="padding: 14px 32px 14px 16px"><span style="position: absolute; left: -9999px">操作</span></th>
+<th scope="col" style="text-align: left; padding: 6px 10px 6px 14px; font-weight: 700; color: #3F5068; white-space: nowrap">受注日</th>
+<th scope="col" style="text-align: left; padding: 6px 10px; font-weight: 700; color: #3F5068; white-space: nowrap">受注番号</th>
+<th scope="col" style="text-align: left; padding: 6px 10px; font-weight: 700; color: #3F5068; white-space: nowrap">状態</th>
+<th scope="col" style="text-align: left; padding: 6px 10px; font-weight: 700; color: #3F5068; white-space: nowrap">進み具合</th>
+<th scope="col" style="text-align: left; padding: 6px 10px; font-weight: 700; color: #3F5068; white-space: nowrap">顧客</th>
+<th scope="col" style="text-align: left; padding: 6px 10px; font-weight: 700; color: #3F5068; white-space: nowrap">配送先</th>
+<th scope="col" style="text-align: left; padding: 6px 10px; font-weight: 700; color: #3F5068; white-space: nowrap">主な製品</th>
+<th scope="col" style="text-align: right; padding: 6px 10px; font-weight: 700; color: #3F5068; white-space: nowrap">数量</th>
+<th scope="col" style="text-align: right; padding: 6px 10px; font-weight: 700; color: #3F5068; white-space: nowrap">金額（税抜）</th>
+<th scope="col" style="text-align: left; padding: 6px 10px; font-weight: 700; color: #3F5068; white-space: nowrap">希望納期</th>
+<th scope="col" style="text-align: left; padding: 6px 10px; font-weight: 700; color: #3F5068; white-space: nowrap">入金</th>
+<th scope="col" style="padding: 6px 14px 6px 10px"><span style="position: absolute; left: -9999px">操作</span></th>
 </tr>
 </thead>
 <tbody>
-<sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
-<tr style="border-top: 1px solid #DDE5EE">
-<td style="padding: 20px 16px 20px 32px; font-weight: 700; white-space: nowrap">{{r.date}}</td>
-<td style="padding: 20px 16px"><span style="font-size: 15px; font-weight: 700; padding: 6px 14px; border-radius: 20px; white-space: nowrap; background: {{r.pillBg}}; color: {{r.pillFg}}">{{r.status}}</span></td>
-<td style="padding: 20px 16px; font-family: ui-monospace, Menlo, monospace; font-size: 15px; color: #5B6B80; white-space: nowrap">{{r.no}}</td>
-<td style="padding: 20px 16px"><div style="font-weight: 700; color: #2A7F6C">{{r.clinic}}</div><div style="font-size: 14px; color: #5B6B80; margin-top: 2px">{{r.ship}}</div></td>
-<td style="padding: 20px 16px">{{r.product}}</td>
-<td style="padding: 20px 16px; text-align: right; white-space: nowrap">{{r.qty}}</td>
-<td style="padding: 20px 16px; text-align: right; font-weight: 700; white-space: nowrap">{{r.amount}}</td>
-<td style="padding: 20px 16px; white-space: nowrap">{{r.due}}</td>
-<td style="padding: 20px 16px; white-space: nowrap; font-weight: 700; color: {{r.payColor}}">{{r.pay}}</td>
-<td style="padding: 20px 32px 20px 16px; text-align: right"><a href="OrderDetail.dc.html" style="display: inline-block; font-size: 15px; font-weight: 700; color: #FFFFFF; background: #00A497; text-decoration: none; padding: 11px 18px; border-radius: 10px; white-space: nowrap">明細を開く ↗</a></td>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="18">
+<tr style="border-top: 1px solid #E3E9F0">
+<td style="padding: 6px 10px 6px 14px; white-space: nowrap">{{r.date}}</td>
+<td style="padding: 6px 10px; font-family: ui-monospace, Menlo, monospace; color: #5B6B80; white-space: nowrap">{{r.no}}</td>
+<td style="padding: 6px 10px"><span style="font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 10px; white-space: nowrap; background: {{r.pillBg}}; color: {{r.pillFg}}">{{r.status}}</span></td>
+<td style="padding: 6px 10px"><div style="display: flex; gap: 2px; align-items: center" role="img" aria-label="進み具合 {{r.progress}}"><sc-for list="{{r.segs}}" as="g" hint-placeholder-count="8"><span style="width: 9px; height: 5px; border-radius: 2px; background: {{g.c}}"></span></sc-for><span style="margin-left: 6px; color: #5B6B80">{{r.progress}}</span></div></td>
+<td style="padding: 6px 10px; font-weight: 700; color: #2A7F6C; white-space: nowrap">{{r.clinic}}</td>
+<td style="padding: 6px 10px; color: #3F5068; white-space: nowrap">{{r.ship}}</td>
+<td style="padding: 6px 10px; white-space: nowrap">{{r.product}}</td>
+<td style="padding: 6px 10px; text-align: right; white-space: nowrap">{{r.qty}}</td>
+<td style="padding: 6px 10px; text-align: right; font-weight: 700; white-space: nowrap">{{r.amount}}</td>
+<td style="padding: 6px 10px; white-space: nowrap">{{r.due}}</td>
+<td style="padding: 6px 10px; white-space: nowrap; font-weight: 700; color: {{r.payColor}}">{{r.pay}}</td>
+<td style="padding: 4px 14px 4px 10px; text-align: right"><a href="OrderDetail.dc.html" style="display: inline-block; font-size: 12px; font-weight: 700; color: #FFFFFF; background: #00A497; text-decoration: none; padding: 4px 12px; border-radius: 6px; white-space: nowrap">開く ↗</a></td>
 </tr>
 </sc-for>
 </tbody>
 </table>
 </div>
 
-<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 32px; border-top: 1px solid #DDE5EE; font-size: 15px; color: #5B6B80">
-<span>6件を表示中（全6件）</span>
-<span>前へ ｜ 1 ｜ 次へ</span>
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 14px; border-top: 1px solid #E3E9F0; color: #5B6B80">
+<span>{{total}}件を表示中（全{{total}}件）</span>
+<span>前へ ｜ 1 / 1 ｜ 次へ</span>
 </div>
 </section>
 
 </main>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
 class Component extends DCLogic {
 renderVals() {
 const pills = {
 '受付': ['#EAF0F5', '#3F5068'],
 '発注済': ['#DDF0E8', '#1F6B57'],
 '輸入・輸送中': ['#FFEFC7', '#6E4700'],
+'入荷済': ['#E4E3F7', '#413A8C'],
 '出荷済': ['#DDEBFA', '#1F4E86'],
 '完了': ['#E3E8EE', '#3F5068']
 };
-const rows = [
-{ date: '11/24', status: '受付', no: 'so261124-03', clinic: 'さくら美容クリニック', ship: '本院', product: 'Fiora thread Cog 360 ほか1点', qty: '60', amount: '¥246,000', due: '12/10', pay: '未請求', payColor: '#5B6B80' },
-{ date: '11/24', status: '受付', no: 'so261124-02', clinic: 'みなと皮膚科クリニック', ship: '本院', product: 'Ace needle 34G 2mm', qty: '200', amount: '¥88,000', due: '12/05', pay: '未請求', payColor: '#5B6B80' },
-{ date: '11/22', status: '発注済', no: 'so261122-01', clinic: 'あおぞらクリニック', ship: '分院', product: 'Fiora thread PCL 3D ほか2点', qty: '90', amount: '¥352,000', due: '12/12', pay: '未請求', payColor: '#5B6B80' },
-{ date: '11/20', status: '輸入・輸送中', no: 'so261120-01', clinic: 'はなみずき美容クリニック', ship: '本院', product: 'Fiora thread Cog 360 ほか2点', qty: '160', amount: '¥281,000', due: '12/04', pay: '未請求', payColor: '#5B6B80' },
-{ date: '11/12', status: '出荷済', no: 'so261112-02', clinic: 'みどり美容外科', ship: '本院', product: 'Fiora thread Arrow cog', qty: '50', amount: '¥205,000', due: '11/26', pay: '未入金（請求済）', payColor: '#9A2B1F' },
-{ date: '11/05', status: '完了', no: 'so261105-01', clinic: 'さくら美容クリニック', ship: '本院', product: 'Posh cog360', qty: '40', amount: '¥144,000', due: '11/19', pay: '入金済', payColor: '#14633A' }
-].map((r) => ({ ...r, pillBg: pills[r.status][0], pillFg: pills[r.status][1] }));
-const kpis = [
-{ label: '本日の受注', value: '2', color: '#00A497' },
-{ label: '発注待ち（受付）', value: '2', color: '#7DB7E8' },
-{ label: '輸入・輸送中', value: '1', color: '#E0A92B' },
-{ label: '未入金', value: '1', color: '#D9604F' }
+const steps = { '受付': 1, '発注済': 2, '輸入・輸送中': 4, '入荷済': 5, '出荷済': 6, '完了': 8 };
+const raw = [
+['11/24','受付','so261124-03','さくら美容クリニック','本院','Fiora thread Cog 360 ほか1点','60','¥246,000','12/10','未請求'],
+['11/24','受付','so261124-02','みなと皮膚科クリニック','本院','Ace needle 34G 2mm','200','¥88,000','12/05','未請求'],
+['11/23','発注済','so261122-01','あおぞらクリニック','分院','Fiora thread PCL 3D ほか2点','90','¥352,000','12/12','未請求'],
+['11/21','発注済','so261121-01','ひかり美容クリニック','本院','Fiora thread-est ほか1点','80','¥312,000','12/08','未請求'],
+['11/20','輸入・輸送中','so261120-01','はなみずき美容クリニック','本院','Fiora thread Cog 360 ほか2点','160','¥281,000','12/04','未請求'],
+['11/19','輸入・輸送中','so261119-01','そよかぜクリニック','本院','Posh cog360','30','¥108,000','12/03','未請求'],
+['11/18','入荷済','so261118-01','つばき美容外科','本院','Fiora thread PCL 3D','25','¥110,000','11/28','未請求'],
+['11/17','出荷済','so261117-01','みなと皮膚科クリニック','本院','Ace needle 34G 2mm','150','¥66,000','11/25','未入金（請求済）'],
+['11/14','輸入・輸送中','so261114-01','あおぞらクリニック','本院','Fiora thread Arrow cog','40','¥164,000','11/30','未請求'],
+['11/13','完了','so261113-01','ひかり美容クリニック','本院','Double arm ほか1点','35','¥126,000','11/24','入金済'],
+['11/12','出荷済','so261112-02','みどり美容外科','本院','Fiora thread Arrow cog','50','¥205,000','11/26','未入金（請求済）'],
+['11/11','完了','so261111-01','つばき美容外科','本院','Ace needle 34G 2mm','300','¥135,000','11/22','入金済'],
+['11/10','完了','so261110-01','そよかぜクリニック','本院','Fiora thread Cog 360','20','¥82,000','11/20','入金済'],
+['11/07','完了','so261107-01','みどり美容外科','本院','Fiora thread PCL 3D ほか1点','60','¥264,000','11/18','入金済'],
+['11/06','完了','so261106-01','はなみずき美容クリニック','本院','Posh cog360','50','¥180,000','11/17','入金済'],
+['11/05','完了','so261105-01','さくら美容クリニック','本院','Posh cog360','40','¥144,000','11/19','入金済'],
+['11/04','完了','so261104-01','あおぞらクリニック','分院','Fiora thread Cog 360','30','¥123,000','11/14','入金済'],
+['11/02','完了','so261102-01','さくら美容クリニック','本院','Ace needle 34G 2mm','200','¥90,000','11/12','入金済']
 ];
-return { rows, kpis };
+const rows = raw.map((a) => {
+const n = steps[a[1]];
+const pay = a[9];
+return {
+date: a[0], status: a[1], no: a[2], clinic: a[3], ship: a[4], product: a[5], qty: a[6], amount: a[7], due: a[8], pay: pay,
+payColor: pay === '入金済' ? '#14633A' : (pay.indexOf('未入金') === 0 ? '#9A2B1F' : '#5B6B80'),
+pillBg: pills[a[1]][0], pillFg: pills[a[1]][1],
+progress: n + '/8',
+segs: Array.from({ length: 8 }, (_, i) => ({ c: i < n ? '#00A497' : '#D6E0EA' }))
+};
+});
+const count = (s) => rows.filter((r) => r.status === s).length;
+const kpis = [
+{ label: '発注待ち（受付）', value: String(count('受付')), color: '#7DB7E8' },
+{ label: '輸入・輸送中', value: String(count('輸入・輸送中')), color: '#E0A92B' },
+{ label: '未入金', value: String(rows.filter((r) => r.pay.indexOf('未入金') === 0).length), color: '#D9604F' },
+{ label: '今月の受注', value: String(rows.length), color: '#00A497' }
+];
+const names = ['すべて', '受付', '発注済', '輸入・輸送中', '入荷済', '出荷済', '完了'];
+const chips = names.map((n, i) => ({
+label: n,
+count: String(i === 0 ? rows.length : count(n)),
+bg: i === 0 ? '#162840' : '#EAF0F5',
+fg: i === 0 ? '#FFFFFF' : '#1A2B42',
+weight: i === 0 ? '700' : '400'
+}));
+return { rows, kpis, chips, total: String(rows.length) };
 }
 }
 </script>

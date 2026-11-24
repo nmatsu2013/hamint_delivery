@@ -1,6 +1,6 @@
 # hamint_delivery
 
-韓国の医療製品（糸リフト・注射針など）を日本のクリニックから受注し、韓国メーカーへの発注・輸入・入庫・国内出荷・請求・入金までを一元管理する受発注システムです。
+医療製品（糸リフト・注射針など）を日本のクリニックから受注し、仕入先への発注・輸入・入庫・国内出荷・請求・入金までを一元管理する受発注システムです。
 
 `spec/spec_detail.md` の詳細設計に基づき、**React SPA + Hono/TypeScript API + PostgreSQL** を実装しています。
 
@@ -103,7 +103,8 @@ npm run dev
 ### 5. ログイン
 
 - 開発時: ログイン画面のロールボタン（営業／購買／倉庫／経理／管理者）でログイン
-- 本番: Supabase Auth の `Authorization: Bearer <JWT>` を使用
+  - `NODE_ENV` が `production` 以外の場合、`ALLOW_DEV_AUTH` 未設定でも開発用ログインは有効
+- 本番: Supabase Auth の `Authorization: Bearer <JWT>` を使用（`ALLOW_DEV_AUTH=false` を推奨）
 - JWTのロールは `app_metadata.role` → `user_metadata.role` → `role` の順で解決（未設定は `sales`）
 
 ## API概要
@@ -153,6 +154,31 @@ npm test          # Vitest 単体テスト
 npm run typecheck # Server + Frontend の型チェック
 npm run build     # Server(tsup) + Frontend(Vite) ビルド
 ```
+
+## トラブルシューティング
+
+### ログイン・初期画面で500エラーになる
+
+1. APIサーバーが起動しているか確認
+
+```bash
+curl http://localhost:3000/api/health
+```
+
+2. DBマイグレーションとシードを適用
+
+```bash
+npm run db:migrate
+npm run db:seed
+```
+
+既存DB（Supabaseで `create.sql` を手動適用済みなど）の場合、`create.sql` は自動で適用済みとして記録され、`0002_spec_detail.sql` 以降だけが適用されます。
+
+3. SupabaseのSSL接続
+
+`sslmode=require` / `prefer` / `verify-ca` の場合、Supabase Session poolerの証明書チェーンに対応するため、libpq互換（暗号化あり・CA検証なし）で接続します。CA検証を厳密に行う場合は `sslmode=verify-full` を利用してください。
+
+開発環境では500レスポンスに `error.details.message` が含まれるため、サーバーターミナルのログと合わせて原因を確認できます。
 
 ## 実装上の注意
 

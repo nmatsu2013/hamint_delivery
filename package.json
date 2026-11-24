@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "韓国医療製品 受発注システム",
+  "description": "医療製品 受発注システム",
   "scripts": {
     "dev": "concurrently -n server,web -c cyan,magenta \"npm:dev:server\" \"npm:dev:frontend\"",
     "dev:server": "tsx watch src/server/main.ts",
