@@ -4,9 +4,11 @@ import { DomainError } from '../../domain/errors/domain.error.js';
 
 const STATUS_BY_CODE: Record<string, ContentfulStatusCode> = {
   NOT_FOUND: 404,
+  TABLE_NOT_FOUND: 404,
   VALIDATION_ERROR: 400,
   BUSINESS_RULE_VIOLATION: 422,
   UNAUTHORIZED: 401,
+  INTERNAL_ERROR: 500,
 };
 
 export function handleError(error: Error, c: Context): Response {

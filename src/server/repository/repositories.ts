@@ -10,6 +10,7 @@ import { PgProductRepository } from './pg-product.repository.js';
 import { PgPurchaseOrderRepository } from './pg-purchase-order.repository.js';
 import { PgSalesOrderRepository } from './pg-sales-order.repository.js';
 import { PgShipmentRepository } from './pg-shipment.repository.js';
+import { PgMasterTableRepository } from './pg-master-table.repository.js';
 
 export function createRepositories(db: Queryable): RepositoryContext {
   return {
@@ -23,5 +24,6 @@ export function createRepositories(db: Queryable): RepositoryContext {
     customers: new PgCustomerRepository(db),
     products: new PgProductRepository(db),
     auditLogs: new PgAuditLogRepository(db),
+    masterTables: new PgMasterTableRepository(db),
   };
 }

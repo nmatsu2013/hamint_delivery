@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { to: '/warehouse', label: '入庫・出荷' },
   { to: '/billing', label: '請求・入金' },
   { to: '/traceability', label: 'ロット' },
-  { to: '/master', label: '顧客・製品' },
+  { to: '/master', label: 'マスタ管理' },
 ];
 
 export function Header() {

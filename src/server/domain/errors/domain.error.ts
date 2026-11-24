@@ -21,6 +21,20 @@ export class ValidationError extends DomainError {
   }
 }
 
+export class TableNotFoundError extends DomainError {
+  constructor(tableName: string) {
+    super(`参照できないテーブルです: ${tableName}`, 'TABLE_NOT_FOUND');
+    this.name = 'TableNotFoundError';
+  }
+}
+
+export class InternalError extends DomainError {
+  constructor(message = 'サーバー内部でエラーが発生しました') {
+    super(message, 'INTERNAL_ERROR');
+    this.name = 'InternalError';
+  }
+}
+
 export class BusinessRuleViolationError extends DomainError {
   constructor(message: string) {
     super(message, 'BUSINESS_RULE_VIOLATION');

@@ -10,8 +10,8 @@
 |---|---|
 | DB | `migration/create.sql`（21テーブル）＋ `0002_spec_detail.sql`（`audit_logs`、製品拡張列、監査トリガー）＋ `0003_harden_audit_logs.sql`＋`0004_remove_roles.sql`、シード |
 | Server | domain / repository / service / handler のクリーンアーキテクチャ。UC-01〜UC-08、簡易認証、監査ログ |
-| Frontend | 受注一覧（`spec/design_sample` 準拠：件数チップ・進み具合・コンパクト表示）・受注明細（8段階ステッパー）・新規受注・発注・輸入申請・入庫検品/ロット・出荷配送・請求入金・ロット追跡・マスタ参照 |
-| テスト | Vitest 単体テスト23件 |
+| Frontend | 受注一覧（`spec/design_sample` 準拠：件数チップ・進み具合・コンパクト表示）・受注明細（8段階ステッパー）・新規受注・発注・輸入申請・入庫検品/ロット・出荷配送・請求入金・ロット追跡・マスタ管理（22テーブル読み取り専用参照） |
+| テスト | Vitest 単体テスト32件 |
 
 ## 技術スタック
 
@@ -119,6 +119,7 @@ npm run dev
 | ロット | `GET /api/lots/available`, `GET /api/lots/trace?lotNo=...` |
 | 請求 | `GET/POST /api/invoices`, `GET /api/invoices/:id`, `POST /api/invoices/:id/payments`, `DELETE /api/invoices/:id`（確定済みは拒否） |
 | マスタ | `GET /api/customers`, `GET /api/customers/:id/addresses`, `GET /api/products`, `GET /api/prices/resolve` |
+| マスタ管理 | `GET /api/master/tables`, `GET /api/master/tables/:tableName/rows`（22テーブル・読み取り専用） |
 | 監査 | `GET /api/audit-logs` |
 | ログイン | `POST /api/auth/login` |
 
@@ -180,6 +181,7 @@ npm run db:seed
 ## 実装上の注意
 
 - **受注一覧の表示件数**: 画面はDBの実データを表示します。初期シードは30件です（受付7・発注済5・輸入/輸送中5・入荷済4・出荷済5・完了4）。`spec/design_sample/Main.dc.html` のレイアウト・色・列構成・進み具合表示に合わせています。
+- **マスタ管理**: `/master` は22テーブルを確認する読み取り専用画面です。テーブル・カラム・並び替え・検索対象はサーバー側の固定許可リストで管理し、登録・更新・削除APIは提供しません。検索条件とページングはURLクエリ（`table` / `q` / `isActive` / `sort` / `order` / `page` / `pageSize`）に同期し、外部キーは参照先名称を補助表示します。
 - **業務日付**: 通常は Asia/Tokyo の今日。受入テスト・デモでは `BUSINESS_DATE` で固定できます。採番（`so`/`po`/`in`/`sh`/`inv`/`ia`）は伝票日付を基準にします。
 - **監査ログ**: 全業務テーブルに `AFTER INSERT/UPDATE/DELETE` トリガーを設定。操作者はトランザクション内の `app.user_id` から記録します。`audit_logs` は UPDATE/DELETE を REVOKE しています。
 - **RLS**: `create.sql` で全テーブルのRLSを有効化しています。Supabaseの `authenticated` / `anon` 向けポリシーは運用設計が必要なため未定義です。`audit_logs` は改変拒否のみ実装済みです。

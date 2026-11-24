@@ -14,6 +14,7 @@ import { createInvoiceRoutes } from './invoice.handler.js';
 import { createImportApplicationRoutes } from './import-application.handler.js';
 import { createDashboardRoutes } from './dashboard.handler.js';
 import { createMasterDataRoutes } from './master-data.handler.js';
+import { createMasterTableRoutes } from './master-table.handler.js';
 import { createAuditLogRoutes } from './audit-log.handler.js';
 
 export function createApp(services: Services, env: Env): Hono<AppEnv> {
@@ -49,6 +50,7 @@ export function createApp(services: Services, env: Env): Hono<AppEnv> {
   app.route('/api/invoices', createInvoiceRoutes(services));
   app.route('/api/import-applications', createImportApplicationRoutes(services));
   app.route('/api/audit-logs', createAuditLogRoutes(services));
+  app.route('/api/master', createMasterTableRoutes(services));
   app.route('/api', createMasterDataRoutes(services));
 
   app.notFound((c) =>

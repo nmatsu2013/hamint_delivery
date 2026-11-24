@@ -9,6 +9,7 @@ import type { IProductRepository } from './product.repository.interface.js';
 import type { IPurchaseOrderRepository } from './purchase-order.repository.interface.js';
 import type { ISalesOrderRepository } from './sales-order.repository.interface.js';
 import type { IShipmentRepository } from './shipment.repository.interface.js';
+import type { IMasterTableRepository } from './master-table.repository.interface.js';
 
 export interface RepositoryContext {
   salesOrders: ISalesOrderRepository;
@@ -21,6 +22,7 @@ export interface RepositoryContext {
   customers: ICustomerRepository;
   products: IProductRepository;
   auditLogs: IAuditLogRepository;
+  masterTables: IMasterTableRepository;
 }
 
 /**
